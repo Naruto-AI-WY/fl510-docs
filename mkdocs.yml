@@ -1,0 +1,78 @@
+site_name: FL-510 软件文档
+use_directory_urls: true
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - navigation.instant
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - 服务:
+      - 上位机服务:
+          - 配液任务下发: services/host/dispense-task.md
+          - 心跳回复: services/host/heartbeat.md
+          - 打印任务下发: services/host/print-dispatch.md
+          - 配液状态恢复: services/host/state-restore.md
+      - 显示屏服务:
+          - 设备当前状态: services/screen/device-status.md
+          - 开关量测试: services/screen/dio-test.md
+          - 大体积测试: services/screen/large-test.md
+          - 小体积测试: services/screen/small-test.md
+          - 打印测试: services/screen/print-test.md
+          - 灌装下发测试: services/screen/fill-dispatch-test.md
+      - 配液服务:
+          - 固体试剂添加: services/dispense/solid-addition.md
+          - 大体积加液: services/dispense/large-dosing.md
+          - 小体积加液: services/dispense/small-dosing.md
+          - pH 测定/酸碱添加: services/dispense/ph-and-acid-alkali.md
+          - 灌装下发通讯: services/dispense/fill-dispatch-comm.md
+          - 电极清洗: services/cleaning/electrode.md
+          - 配液桶清洗: services/cleaning/tank.md
+          - 上传配液数据: services/dispense/upload-data.md
+      - 加液服务程序:
+          - 大体积加液服务：加液/校准/清洗/填充: services/programs/large-dosing-program.md
+          - 2 路酸碱服务：小体积加液/校准/清洗/填充/通路切换: services/programs/acid-alkali-2ch-program.md
+          - 8 路小体积服务：加液/校准/清洗/填充: services/programs/small-dosing-8ch-program.md
+      - 机械臂/末端服务:
+          - 大肯机械臂（左）：固体添加/搅拌/夹爪清洗/初始化: services/arms/daken-left.md
+          - 大肯机械臂（右）：电极校准/pH 测定/电极清洗/初始化: services/arms/daken-right.md
+          - 清洗臂：配液桶清洗/吹干/初始化: services/arms/cleaning-arm.md
+      - 清洗服务（通用）:
+          - pH 电极清洗: services/cleaning/ph-electrode.md
+          - 夹爪清洗: services/cleaning/gripper.md
+          - 大体积回路清洗: services/cleaning/large-loop.md
+          - 小体积回路清洗: services/cleaning/small-loop.md
+          - 旋切阀清洗: services/cleaning/rotary-valve.md
+      - 标定服务:
+          - 小体积标定: services/calibration/small.md
+          - 大体积标定: services/calibration/large.md
+          - pH 电极校准: services/calibration/ph_calibration_requirements_v1.6.7.md
