@@ -1,0 +1,3000 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../large/">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+    
+    
+      
+        <title>pH 电极校准 - FL-510 软件文档</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phv167" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="FL-510 软件文档" class="md-header__button md-logo" aria-label="FL-510 软件文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            FL-510 软件文档
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pH 电极校准
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="FL-510 软件文档" class="md-nav__button md-logo" aria-label="FL-510 软件文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    FL-510 软件文档
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_1" id="__nav_1_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    上位机服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            上位机服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../host/dispense-task/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    配液任务下发
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../host/heartbeat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    心跳回复
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../host/print-dispatch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    打印任务下发
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../host/state-restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    配液状态恢复
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    显示屏服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            显示屏服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/device-status/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    设备当前状态
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/dio-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    开关量测试
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/large-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大体积测试
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/small-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    小体积测试
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/print-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    打印测试
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../screen/fill-dispatch-test/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    灌装下发测试
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_3" id="__nav_1_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    配液服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            配液服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/solid-addition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    固体试剂添加
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/large-dosing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大体积加液
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/small-dosing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    小体积加液
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/ph-and-acid-alkali/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pH 测定/酸碱添加
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/fill-dispatch-comm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    灌装下发通讯
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/electrode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    电极清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/tank/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    配液桶清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../dispense/upload-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    上传配液数据
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_4" id="__nav_1_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    加液服务程序
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_4">
+            <span class="md-nav__icon md-icon"></span>
+            加液服务程序
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../programs/large-dosing-program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大体积加液服务：加液/校准/清洗/填充
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../programs/acid-alkali-2ch-program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2 路酸碱服务：小体积加液/校准/清洗/填充/通路切换
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../programs/small-dosing-8ch-program/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    8 路小体积服务：加液/校准/清洗/填充
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_5" id="__nav_1_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    机械臂/末端服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_5">
+            <span class="md-nav__icon md-icon"></span>
+            机械臂/末端服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../arms/daken-left/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大肯机械臂（左）：固体添加/搅拌/夹爪清洗/初始化
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../arms/daken-right/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大肯机械臂（右）：电极校准/pH 测定/电极清洗/初始化
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../arms/cleaning-arm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    清洗臂：配液桶清洗/吹干/初始化
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_6" id="__nav_1_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    清洗服务（通用）
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            清洗服务（通用）
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/ph-electrode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    pH 电极清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/gripper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    夹爪清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/large-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大体积回路清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/small-loop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    小体积回路清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cleaning/rotary-valve/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    旋切阀清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1_7" id="__nav_1_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    标定服务
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1_7">
+            <span class="md-nav__icon md-icon"></span>
+            标定服务
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../small/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    小体积标定
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../large/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    大体积标定
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    pH 电极校准
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    pH 电极校准
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      架构前提
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      校准流程（三阶段）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="校准流程（三阶段）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段一：准备与数据采集
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段二：校准执行与参数计算
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段三：验证、质量检查与报告
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般流程描述
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-5parameter-request-and-judgment" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-5：性能参数请求与判断（Parameter Request and Judgment）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-5：性能参数请求与判断（Parameter Request and Judgment）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 电极身份识别
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-slope" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 斜率（Slope）判断
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 零电位（Offset）判断
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-6verification-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6：回测（验证）流程（Verification Process）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-6：回测（验证）流程（Verification Process）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fr-62-ph-ph" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6.2 温度补偿与 pH 换算（在智能pH电极中实现）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-6.2 温度补偿与 pH 换算（在智能pH电极中实现）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      一、公式（最简）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      二、工程实现（一步步）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      三、数值例子
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      四、实施备注与防错
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      五、寄存器映射（实现对照）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 状态切换与缓冲液识别
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 数据请求
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3 回测偏差判断
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-66" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6.6 零点（截距）与温度的处理原则（更新）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-7failure-and-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-7：失败与重试逻辑（Failure and Retry Logic）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-7：失败与重试逻辑（Failure and Retry Logic）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1 重试计数器
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2 失败时的动作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3 接收到重试指令后的动作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4 重试用尽后的处理
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      换电极后的复位流程
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-83" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-8.3：日志传输与数据可靠性
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-8.3：日志传输与数据可靠性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#831-general-packet-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.1 数据包通用格式（General Packet Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#832-success-log-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.2 成功日志格式（Success Log Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#833-failure-log-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.3 失败日志格式（Failure Log Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#834-transmission-protocol-and-acknowledgement" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.4 传输协议与确认机制（Transmission Protocol and Acknowledgement）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.4 传输协议与确认机制（Transmission Protocol and Acknowledgement）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ph" class="md-nav__link">
+    <span class="md-ellipsis">
+      附录：智能pH电极补偿算法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      总结
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ph_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      针对三信pH电极的控制逻辑说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="针对三信pH电极的控制逻辑说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ph_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      主控板与三信pH电极的完整校准交互流程 (增强版)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      校准前准备 (Step 0)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段一：启动与稳定性监控 (Step 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段二：两点校准执行 (Step 2)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-check-" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段三：流程健全性检查 (Sanity Check) - (新增步骤)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段四：参数判断与回测验证 (Step 4)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段五：流程结束 (Step 5)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      失败与重试逻辑 (Step 6)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      备注
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      架构前提
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      校准流程（三阶段）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="校准流程（三阶段）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段一：准备与数据采集
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段二：校准执行与参数计算
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段三：验证、质量检查与报告
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般流程描述
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-5parameter-request-and-judgment" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-5：性能参数请求与判断（Parameter Request and Judgment）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-5：性能参数请求与判断（Parameter Request and Judgment）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 电极身份识别
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-slope" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 斜率（Slope）判断
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-offset" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 零电位（Offset）判断
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-6verification-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6：回测（验证）流程（Verification Process）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-6：回测（验证）流程（Verification Process）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fr-62-ph-ph" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6.2 温度补偿与 pH 换算（在智能pH电极中实现）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-6.2 温度补偿与 pH 换算（在智能pH电极中实现）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      一、公式（最简）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      二、工程实现（一步步）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      三、数值例子
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      四、实施备注与防错
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      五、寄存器映射（实现对照）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 状态切换与缓冲液识别
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 数据请求
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.3 回测偏差判断
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fr-66" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-6.6 零点（截距）与温度的处理原则（更新）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-7failure-and-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-7：失败与重试逻辑（Failure and Retry Logic）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-7：失败与重试逻辑（Failure and Retry Logic）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.1 重试计数器
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.2 失败时的动作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.3 接收到重试指令后的动作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74" class="md-nav__link">
+    <span class="md-ellipsis">
+      7.4 重试用尽后的处理
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      换电极后的复位流程
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fr-83" class="md-nav__link">
+    <span class="md-ellipsis">
+      FR-8.3：日志传输与数据可靠性
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FR-8.3：日志传输与数据可靠性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#831-general-packet-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.1 数据包通用格式（General Packet Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#832-success-log-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.2 成功日志格式（Success Log Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#833-failure-log-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.3 失败日志格式（Failure Log Format）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#834-transmission-protocol-and-acknowledgement" class="md-nav__link">
+    <span class="md-ellipsis">
+      8.3.4 传输协议与确认机制（Transmission Protocol and Acknowledgement）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3.4 传输协议与确认机制（Transmission Protocol and Acknowledgement）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ph" class="md-nav__link">
+    <span class="md-ellipsis">
+      附录：智能pH电极补偿算法
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      总结
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ph_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      针对三信pH电极的控制逻辑说明
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="针对三信pH电极的控制逻辑说明">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ph_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      主控板与三信pH电极的完整校准交互流程 (增强版)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      校准前准备 (Step 0)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段一：启动与稳定性监控 (Step 1)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段二：两点校准执行 (Step 2)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanity-check-" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段三：流程健全性检查 (Sanity Check) - (新增步骤)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段四：参数判断与回测验证 (Step 4)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      阶段五：流程结束 (Step 5)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      失败与重试逻辑 (Step 6)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      备注
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="phv167">智能pH电极校准功能需求补充v1.6.7</h1>
+<h2 id="_1">架构前提</h2>
+<p>本章节功能描述基于以下系统架构：</p>
+<ul>
+<li><strong>智能 pH 电极 (Slave)</strong>：内部集成了pH校准和温度补偿算法。在接收到主控板的进行校准指令后，能够执行校准并计算出斜率百分比和零点偏移（Offset）。 <strong>具体可参照文章后面的补偿算法</strong>。 </li>
+<li><strong>嵌入式主控板 (Master)</strong>：负责发送校准指令、请求数据、根据内置的合规标准进行判断，并管理整个流程的状态（包括重试和最终成功/失败）。  </li>
+<li><strong>上位机 (Host Computer )</strong>：承担日志接收、存储与可视化：  </li>
+<li><strong>接收与确认</strong>：通过 TCP接收校准日志（JSON/JSON Lines），完成解析与入库。</li>
+<li><strong>可视化与追溯</strong>：仪表板展示设备在线状态、校准结果、失败码统计、温度与偏差趋势；支持筛选、审计导出。   </li>
+<li><strong>安全与合规</strong>：操作审计、数据保留/备份/归档策略，满足质量与合规要求。</li>
+</ul>
+<hr />
+<h2 id="_2">校准流程（三阶段）</h2>
+<blockquote>
+<p>本节对 pH 电极校准的<strong>操作性流程</strong>进行统一描述，并与 FR-5/FR-6/FR-7/FR-8.3 的判据与日志机制保持一致。参数阈值均可配置。</p>
+</blockquote>
+<h3 id="_3">阶段一：准备与数据采集</h3>
+<ul>
+<li><strong>数据采集</strong>：主控板（Master）持续读取并监控电极的核心参数：<strong>原始 mV</strong>、<strong>当前 pH</strong>、<strong>温度</strong>。  </li>
+<li><strong>稳定性监控</strong>：在开始每个校准点之前，必须确保电极读数已稳定。  </li>
+<li><strong>默认稳定标准</strong>：在最近 <strong>60 s</strong> 内，<strong>mV 漂移 &lt; 1 mV</strong>（或等效的滑动窗口/标准差判据）。  </li>
+<li>达到稳定标准后，才会触发后续的校准指令；若在设置的<strong>最长等待时间</strong>内未达标，流程应报超时并进入 FR-7。</li>
+</ul>
+<h3 id="_4">阶段二：校准执行与参数计算</h3>
+<blockquote>
+<p>两点校准按顺序进行，温度修正基于缓冲液温度-理论 pH 曲线。</p>
+</blockquote>
+<ol>
+<li><strong>第一点校准</strong>  </li>
+<li><strong>操作</strong>：将电极浸入第一个标准缓冲液（如 pH 4.01 或 pH 7.00）。  </li>
+<li><strong>系统动作</strong>：  <ul>
+<li>嵌入式主控板监控pH电极电压稳定性并判定达标；  </li>
+<li>嵌入式主控板向电极发送<strong>校准指令的</strong>，指令中的数据包含当前使用的是哪种标准缓冲液，例如1.68/4.00/4.01/7.00/6.86/9.18/10.01/12.45/12.46其中的一种； </li>
+<li>嵌入式主控板等待电极的反馈信号，判断当前点是否校准结束。</li>
+<li>记录该点的 <strong>(标准 pH₁, 实际 mV₁, 温度 T₁)</strong>。</li>
+</ul>
+</li>
+<li><strong>第二点校准</strong>  </li>
+<li><strong>操作</strong>：将电极浸入第二个标准缓冲液（与第一点有足够 pH 差值，建议 ≥ 3 pH，如 pH 9.18 或 10.01）。  </li>
+<li><strong>系统动作</strong>：重复上一步流程，记录 <strong>(标准 pH₂, 实际 mV₂, 温度 T₂)</strong>。</li>
+<li><strong>电极内部参数计算</strong>  </li>
+<li>pH电极使用两点数据自动计算<strong>斜率</strong>与<strong>零点偏移</strong>并形成校准参数；Master 读取<strong>斜率百分比</strong>与 <strong>Offset</strong> 进行 <strong>FR-5</strong> 判定。  （电极计算的是当前温度下的校准参数，同时也会反馈校准时的温度值）</li>
+<li>（参考关系式，用于质控与追溯）  <ul>
+<li>斜率 <em>k</em>：表示 pH 每变化 1 单位时的 mV 变化量（25 ℃ 理想值约 59.16 mV/pH）；  </li>
+<li>线性关系：<code>pH = k × mV + b</code>，其中 <em>b</em> 为零点偏移。</li>
+</ul>
+</li>
+<li><strong>第三点回测（验证点）</strong>  </li>
+<li><strong>操作</strong>：将电极浸入第三个标准缓冲液（如 pH 6.86，区别于前两点）。  </li>
+<li><strong>目的</strong>：不参与参数计算，仅用于<strong>验证</strong>前述两点校准的准确性。  </li>
+<li><strong>系统动作</strong>：读取当前第三点的 实际pH值和温度值，与回测点的理论 pH值（当前温度，查<em>Table1</em>）比较，<strong>计算偏差</strong>，结果用于 <strong>FR-6</strong> 判定。</li>
+</ol>
+<h3 id="_5">阶段三：验证、质量检查与报告</h3>
+<ul>
+<li><strong>精度验证（FR-6）</strong>：第三点回测 <strong>|测量值 − 理论值| ≤ 0.05 pH</strong>。  </li>
+<li><strong>质量检查（FR-5）</strong>：  </li>
+<li><strong>斜率百分比</strong>在 <strong>90.0% ~ 105.0%</strong>；  </li>
+<li><strong>Offset</strong> 在 <strong>−30.0 ~ +30.0 mV</strong>。  </li>
+<li><strong>判定与处理（FR-7）</strong>：任一项目不合格即进入失败与重试逻辑；重试用尽进入“校准失败”状态。  </li>
+<li><strong>报告与追溯（FR-8.3）</strong>：上报/拉取<strong>完整日志</strong>（含各校准点记录、温度、斜率%、Offset、回测偏差、重试计数、电极信息等），由上位机<strong>确认 ACK</strong> 后标记送达。</li>
+</ul>
+<h3 id="_6">一般流程描述</h3>
+<p>准备 → 采集数据 → 监控稳定 → 点1校准 → 点2校准 → pH电极参数计算 → 第三点回测 → 验证精度 → 质量检查 → 上报/记录</p>
+<hr />
+<div style="page-break-after: always;"></div>
+
+<h2 id="fr-5parameter-request-and-judgment">FR-5：性能参数请求与判断（Parameter Request and Judgment）</h2>
+<ul>
+<li><strong>描述</strong>：在电极完成内部的两点校准计算后，主控板请求关键性能参数并进行第一轮判断。<strong>此阶段通过是进入验证环节的前提，但并非校准成功的最终条件。</strong></li>
+</ul>
+<h3 id="51">5.1 电极身份识别</h3>
+<ul>
+<li><strong>动作</strong>：在主控板开始整个校准流程时（例如，接收到上位机开始指令后），首先读取电极的序列号、型号和固件版本。</li>
+<li><strong>目的</strong>：将此信息作为上下文记录，并随所有后续日志上报，用于追溯和电极更换检测。</li>
+</ul>
+<h3 id="52-slope">5.2 斜率（Slope）判断</h3>
+<ul>
+<li><strong>动作</strong>：主控板向 pH 电极发送指令，请求获取校准后的斜率百分比（即 <em>实测斜率 / 理论斜率 × 100%</em>）。</li>
+<li><strong>判断</strong>：主控板将接收到的斜率百分比，与自身固件中存储的合格范围（<strong>90.0% ~ 105.0%</strong>）进行比较。</li>
+<li><strong>失败处理</strong>：若超出范围，主控板记录失败原因（例如：<code>FAIL_CODE_SLOPE_LOW</code>），并立即转至 <strong>FR-7 失败与重试逻辑</strong>。</li>
+</ul>
+<h3 id="53-offset">5.3 零电位（Offset）判断</h3>
+<ul>
+<li><strong>动作</strong>：主控板向 pH 电极发送指令（同5.2请求斜率可以一条指令，<strong>这条指令也可返回校准时的温度值</strong>），请求获取校准后的零点漂移 Offset（单位 mV）。</li>
+<li><strong>判断</strong>：主控板将接收到的 Offset 值，与自身存储的合格范围（<strong>-30.0 mV ~ +30.0 mV</strong>）进行比较。<em>（注：此范围基于当前电极规格设定，如需调整可通过上位机配置）</em></li>
+<li><strong>失败处理</strong>：若超出范围，主控板记录失败原因（例如：<code>FAIL_CODE_OFFSET_HIGH</code>），并立即转至 <strong>FR-7 失败与重试逻辑</strong>。</li>
+</ul>
+<hr />
+<h2 id="fr-6verification-process">FR-6：回测（验证）流程（Verification Process）</h2>
+<h3 id="fr-62-ph-ph">FR-6.2 温度补偿与 pH 换算（在智能pH电极中实现）</h3>
+<p><strong>目标</strong>：在“测量温度” <span class="arithmatex">\(T\)</span> 下，用最近一次校准得到的 <strong>slope%</strong> 与 <strong>offset</strong>（以 <span class="arithmatex">\(pH=7\)</span> 时的电位 <span class="arithmatex">\(E_7\)</span> 表示），把当前测得的电位 <span class="arithmatex">\(E\)</span>（mV）换算为 pH。</p>
+<h4 id="_7">一、公式（最简）</h4>
+<p>1) 理想 Nernst 斜率（mV/pH）<br />
+$$
+S_{ideal}(T)=59.16\times \frac{T+273.15}{298.15}
+$$</p>
+<blockquote>
+<p><span class="arithmatex">\(T\)</span> 以 <strong>℃</strong> 计；59.16 是 <strong>25℃</strong> 时的理想斜率（mV/pH）。</p>
+</blockquote>
+<p>2) 实际斜率（考虑电极效率）<br />
+$$
+S(T)=\frac{\text{slope\%}}{100} \times S_{ideal}(T)
+$$</p>
+<p>3) pH 计算<br />
+$$
+\boxed{\;pH=7-\frac{E-E_7}{S(T)}\;}
+$$</p>
+<p><strong>符号/单位</strong>：<br />
+- <span class="arithmatex">\(T\)</span>：当前测量温度（℃）<br />
+- <span class="arithmatex">\(E\)</span>：当前样品电位（mV）<br />
+- <span class="arithmatex">\(E_7\)</span>：校准得到的“pH=7 电位”（mV，常称 <em>offset</em>）<br />
+- <span class="arithmatex">\(\text{slope\%}\)</span>：校准得到的斜率百分比（如 98 表示 98%）<br />
+- <span class="arithmatex">\(S_{ideal}(T), S(T)\)</span>：斜率（mV/pH）</p>
+<h4 id="_8">二、工程实现（一步步）</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>输入：T(℃), E(mV), slope_percent(%), E7(mV)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>S_ideal = 59.16 * ( (T + 273.15) / 298.15 )
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>S       = (slope_percent / 100.0) * S_ideal
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>dE      = E - E7
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>pH      = 7.0 - dE / S
+</code></pre></div>
+<blockquote>
+<p>合理性检查：当样品是 pH7 缓冲液时，测得 <span class="arithmatex">\(E \approx E_7\)</span> ⇒ <span class="arithmatex">\(dE\approx 0\)</span> ⇒ <span class="arithmatex">\(pH\approx 7\)</span>。</p>
+</blockquote>
+<h4 id="_9">三、数值例子</h4>
+<ul>
+<li>校准结果：<code>slope% = 98</code>，<code>E7 = +2 mV</code>  </li>
+<li>本次测量：<code>T = 30 ℃</code>，<code>E = -120 mV</code><br />
+计算：  </li>
+<li><code>S_ideal ≈ 59.16 * ((30 + 273.15)/298.15) ≈ 60.15 mV/pH</code>  </li>
+<li><code>S ≈ 0.98 * 60.15 ≈ 58.95 mV/pH</code>  </li>
+<li><code>dE = -120 - 2 = -122 mV</code>  </li>
+<li><code>pH = 7 - (-122)/58.95 ≈ 9.07</code>（碱性）</li>
+</ul>
+<h4 id="_10">四、实施备注与防错</h4>
+<ul>
+<li><strong>offset 定义</strong>：默认 offset 即 <span class="arithmatex">\(E_7\)</span>（pH7 的电位）。若设备把 offset 定义为 <span class="arithmatex">\(E_0\)</span>（pH=0 截距，少见），则应改用 <code>pH = (E - E0) / S(T)</code>。  </li>
+<li><strong>温度取值</strong>：<strong>始终使用“当前实时温度”</strong> 计算斜率，不要沿用“校准时温度”。  </li>
+<li><strong>阈值建议</strong>：<code>90% ≤ slope% ≤ 105%</code>，<code>|E7| ≤ 30 mV</code>（经验阈值，越界提示换电极/重校）。</li>
+</ul>
+<h4 id="_11">五、寄存器映射（实现对照）</h4>
+<ul>
+<li><strong>E (mV)</strong>：<code>0x1100–0x1101</code>  </li>
+<li><strong>pH（若电极已计算）</strong>：<code>0x1102–0x1103</code>  </li>
+<li><strong>T (℃)</strong>：<code>0x1104–0x1105</code>  </li>
+<li><strong>校准参数组（含 slope%、E7 等）</strong>：自 <strong><code>0x1130</code></strong> 起（以通信示例为准）  </li>
+<li><strong>保存校准</strong>：写 <code>0x0101 = 0x3535</code>；<strong>回滚理论状态</strong>：写 <code>0x0101 = 0x35AC</code></li>
+</ul>
+<p><strong>描述</strong>：在斜率和零电位判断通过后，主控板引导系统进入验证流程。<strong>此环节是校准成功的最终且强制性关口，即使FR-5通过，本环节失败则校准失败。</strong></p>
+<h3 id="61">6.1 状态切换与缓冲液识别</h3>
+<ul>
+<li>主控板进入“<strong>等待验证液</strong>”状态。</li>
+<li>系统需明确当前使用的验证液种类（例如，通过上位机指令指定或RFID识别）。<strong>本系统默认使用 pH 6.86 （可更改）的磷酸盐标准缓冲液进行验证。</strong></li>
+</ul>
+<h3 id="62">6.2 数据请求</h3>
+<ul>
+<li>机械臂将电极放入验证液。</li>
+<li>主控板周期性地向 pH 电极发送指令，请求当前 pH 读数。此时，pH智能电极应使用本次校准后的新参数来计算并返回 pH 值。（<strong>是经过校准时的温度补偿值</strong>）</li>
+</ul>
+<h3 id="63">6.3 回测偏差判断</h3>
+<ul>
+<li>主控板记录pH电极校准时测得的温度，然后计算出回测校准液在该温度下的<strong>理论 pH 值</strong>（温度补偿）。根据*<em>Table1</em>做差值计算  （具体看选择哪一种校准液作为回测液）</li>
+<li>主控板计算偏差：<strong>偏差 =（接收到的 pH 读数 − 理论 pH 值）</strong>。  </li>
+<li>
+<p>主控板判断该偏差的绝对值是否 <strong>≤ 0.05 pH</strong>。  </p>
+</li>
+<li>
+<p>失败处理：若偏差超限，主控板记录失败原因（<code>FAIL_CODE_VERIFY_DEVIATION</code>），并转至 <strong>FR-7 失败与重试逻辑</strong>。</p>
+</li>
+</ul>
+<p><strong>Table1 校准液理论pH表格</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">温度 (°C)</th>
+<th style="text-align: center;">草酸盐标准缓冲液</th>
+<th style="text-align: center;">邻苯二甲酸氢钾标准缓冲液</th>
+<th style="text-align: center;">磷酸盐标准缓冲液</th>
+<th style="text-align: center;">硼砂标准缓冲液</th>
+<th style="text-align: center;">氢氧化钙标准缓冲液（25℃饱和溶液）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1.67</td>
+<td style="text-align: center;">4.01</td>
+<td style="text-align: center;">6.98</td>
+<td style="text-align: center;">9.46</td>
+<td style="text-align: center;">13.43</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1.67</td>
+<td style="text-align: center;">4.00</td>
+<td style="text-align: center;">6.95</td>
+<td style="text-align: center;">9.40</td>
+<td style="text-align: center;">13.21</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">1.67</td>
+<td style="text-align: center;">4.00</td>
+<td style="text-align: center;">6.92</td>
+<td style="text-align: center;">9.33</td>
+<td style="text-align: center;">13.00</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">1.67</td>
+<td style="text-align: center;">4.00</td>
+<td style="text-align: center;">6.90</td>
+<td style="text-align: center;">9.27</td>
+<td style="text-align: center;">12.81</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">1.68</td>
+<td style="text-align: center;">4.00</td>
+<td style="text-align: center;">6.88</td>
+<td style="text-align: center;">9.22</td>
+<td style="text-align: center;">12.63</td>
+</tr>
+<tr>
+<td style="text-align: center;">25</td>
+<td style="text-align: center;">1.68</td>
+<td style="text-align: center;">4.01</td>
+<td style="text-align: center;">6.86</td>
+<td style="text-align: center;">9.18</td>
+<td style="text-align: center;">12.45</td>
+</tr>
+<tr>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">1.68</td>
+<td style="text-align: center;">4.01</td>
+<td style="text-align: center;">6.85</td>
+<td style="text-align: center;">9.14</td>
+<td style="text-align: center;">12.30</td>
+</tr>
+<tr>
+<td style="text-align: center;">35</td>
+<td style="text-align: center;">1.69</td>
+<td style="text-align: center;">4.02</td>
+<td style="text-align: center;">6.84</td>
+<td style="text-align: center;">9.10</td>
+<td style="text-align: center;">12.14</td>
+</tr>
+<tr>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">1.69</td>
+<td style="text-align: center;">4.04</td>
+<td style="text-align: center;">6.84</td>
+<td style="text-align: center;">9.06</td>
+<td style="text-align: center;">11.98</td>
+</tr>
+<tr>
+<td style="text-align: center;">45</td>
+<td style="text-align: center;">1.70</td>
+<td style="text-align: center;">4.05</td>
+<td style="text-align: center;">6.83</td>
+<td style="text-align: center;">9.04</td>
+<td style="text-align: center;">11.84</td>
+</tr>
+<tr>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">1.71</td>
+<td style="text-align: center;">4.06</td>
+<td style="text-align: center;">6.83</td>
+<td style="text-align: center;">9.01</td>
+<td style="text-align: center;">11.71</td>
+</tr>
+<tr>
+<td style="text-align: center;">55</td>
+<td style="text-align: center;">1.72</td>
+<td style="text-align: center;">4.08</td>
+<td style="text-align: center;">6.83</td>
+<td style="text-align: center;">8.99</td>
+<td style="text-align: center;">11.57</td>
+</tr>
+<tr>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">1.72</td>
+<td style="text-align: center;">4.09</td>
+<td style="text-align: center;">6.84</td>
+<td style="text-align: center;">8.96</td>
+<td style="text-align: center;">11.45</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="fr-66">FR-6.6 零点（截距）与温度的处理原则（更新）</h3>
+<p><strong>默认策略</strong>  </p>
+<ul>
+<li>测量阶段沿用最近一次校准得到的零点/截距（<strong>E7</strong> 或 <strong>E0</strong>），不随温度改写；温度的一阶影响通过 <strong>S(T_now)</strong>（Nernst 斜率）来补偿。  </li>
+<li>换算公式：  </li>
+<li>以 <strong>E7</strong> 口径存储零点时：<code>pH = 7 - (E - E7) / S(T_now)</code>  </li>
+<li>以 <strong>E0</strong> 口径存储零点时：<code>pH = (E - E0) / S(T_now)</code><br />
+    其中 <code>S(T_now) = η · S_ideal(T_now)</code>，<code>S_ideal(T) = 59.16 * (T + 273.15) / 298.15</code> (mV/pH)。</li>
+</ul>
+<p><strong>何时复核/更新零点（可选，临时手段）</strong>  </p>
+<ul>
+<li><strong>优先原则</strong>：若现场条件允许（有缓冲液、可停机、合规窗口开放），<strong>直接执行两点重校</strong>，不建议仅调整零点。  </li>
+<li><strong>仅当暂时无法重校</strong>（产线连续、样品测量不可中断、现场缺耗材/人手）且排除温度探头异常、缓冲液问题、明显的斜率异常时，方可采用“快速零点估计”做<strong>临时修正</strong>：  </li>
+<li>在当前温度 <code>T_now</code> 用<strong>已知 pH 缓冲液</strong>测得电位 <code>E_meas</code>，查表得 <code>pH_ref(T_now)</code>；  </li>
+<li>计算 <code>S(T_now)</code>（按分支 A 或 B），估计新零点：<br />
+<code>E7_est = E_meas + S(T_now) * ( pH_ref(T_now) - 7 )</code>  </li>
+<li>若 <code>|E7_est - E7| &gt; 5–10 mV</code> 且<strong>多次复测稳定</strong>，可在系统中记录“<strong>临时零点修正</strong>”，并将 <code>E7 := E7_est</code>；同时自动创建<strong>重校任务</strong>，在最早可行时段执行<strong>两点重校</strong>并覆盖该临时修正。  </li>
+<li><strong>禁止情形</strong>：<code>slope_percent</code> 超界或显著波动、回测呈<strong>非平移型</strong>误差、或任何硬件/介质异常未排除 → <strong>不得仅改零点，必须两点重校</strong>。  </li>
+<li><strong>审计要求</strong>：临时修正需在日志中标记原因、操作者/时间、原值/新值，并在后续重校完成后<strong>关闭临时状态</strong>。</li>
+</ul>
+<p><strong>典型适用场景（示例）</strong>  </p>
+<ul>
+<li><strong>温差较大</strong>：<code>|T_now - Tc| &gt; 10–15 °C</code>，且当前方法/法规对零点误差有更严格要求（如 <code>|ΔpH| ≤ 0.02</code>）。  </li>
+<li><strong>连续生产不可停机</strong>：当班需将偏差先拉回控制限内；<code>slope_percent</code> 正常、温度探头自检正常、噪声/漂移可控。  </li>
+<li><strong>近似“平移型”偏差</strong>：连续多批样品的 <code>(pH_meas - pH_ref(T_now))</code> 近似为<strong>常数</strong>；酸端/碱端误差对称。  </li>
+<li><strong>QC 复核提示零点平移</strong>：标准样复测显示整体偏移，且短时内需要进入关键工序，允许临时兜底。</li>
+</ul>
+<p><strong>不适用场景（示例，直接两点重校）</strong>  </p>
+<ul>
+<li><code>slope_percent</code> 超界或显著波动（斜率型误差）。  </li>
+<li>酸端/碱端误差<strong>不对称</strong>（非平移型偏差）。  </li>
+<li>温度探头异常、缓冲液过期/污染、膜破/参比问题等硬件或介质异常未排除。
+  <strong>阈值与告警（建议）</strong>  </li>
+<li><code>90% ≤ slope_percent ≤ 105%</code>；<code>|E7| ≤ 30 mV</code>；零点漂移监控采用“滑窗均值 + 抖动抑制”再判阈值。  </li>
+<li>发现突变先排查：电极污染/老化、参比盐桥问题、接线与接地、温度探头异常。</li>
+</ul>
+<p><strong>例外（电极直接输出 pH）</strong>  </p>
+<ul>
+<li>若电极本身输出的是 pH（非 mV），其内部已按<strong>实时温度</strong>与最近校准参数完成换算。此时直接读取 pH 即可，主控板无需另行处理截距/斜率。</li>
+</ul>
+<hr />
+<h2 id="fr-7failure-and-retry-logic">FR-7：失败与重试逻辑（Failure and Retry Logic）</h2>
+<p><strong>描述</strong>：当任何一项核心指标不合格时，主控板应启动内部的失败处理和重试机制。</p>
+<h3 id="71">7.1 重试计数器</h3>
+<p>主控板内置一个重试计数器，初始值为 <strong>2</strong>。</p>
+<h3 id="72">7.2 失败时的动作</h3>
+<ul>
+<li>记录具体的内部失败代码；  </li>
+<li>通过接口输出失败状态（例如，特定的错误码）；  </li>
+<li>进入“<strong>等待重试指令</strong>”状态。</li>
+</ul>
+<h3 id="73">7.3 接收到重试指令后的动作</h3>
+<p>当接收到重试指令后，主控板将重试计数器减 <strong>1</strong>，并向电极发送指令，从头开始一个新的校准周期。</p>
+<h3 id="74">7.4 重试用尽后的处理</h3>
+<p>如果所有重试次数均用尽后仍然失败，主控板应：
+- 进入永久性“<strong>校准失败</strong>”状态。此状态只能通过系统复位或特定的“<strong>强制清除错误</strong>”（<code>FORCE_CLEAR_FAILURE</code>）指令来解除。该指令应由授权管理员在确认问题已解决（如更换电极）后手动触发。
+- 输出一个明确的、最终的失败状态码和日志。</p>
+<ul>
+<li>
+<h3 id="_12">换电极后的复位流程</h3>
+</li>
+<li>
+<p><strong>物理更换与准备</strong>：更换电极，并进行必要的活化与稳定。</p>
+</li>
+<li><strong>状态清除</strong>：由上位机向处于“校准失败”状态的主控板下发 <code>FORCE_CLEAR_FAILURE</code> 指令。</li>
+<li><strong>系统复位</strong>：主控板接收到指令后，执行以下操作：<ul>
+<li>退出“校准失败”状态。</li>
+<li><strong>重置重试计数器</strong>为初始值（2）。</li>
+<li>清空内部所有临时校准数据和阶段标志。</li>
+</ul>
+</li>
+<li><strong>新电极识别</strong>：在下次校准开始时，主控板将自动读取并上报新电极的身份信息（见FR-5.1），上位机据此记录电极更换事件。</li>
+</ul>
+<hr />
+<h2 id="fr-83">FR-8.3：日志传输与数据可靠性</h2>
+<p><strong>描述</strong>：在校准流程的各个关键节点（成功/失败），主控板必须将完整的日志记录安全、可靠地传输到指定的上位机。</p>
+<h3 id="831-general-packet-format">8.3.1 数据包通用格式（General Packet Format）</h3>
+<ul>
+<li><strong>动作</strong>：主控板必须将校准结果打包成结构化的 <strong>JSON</strong> 格式进行传输。</li>
+<li><strong>通用字段</strong>：所有日志数据包必须包含以下字段：</li>
+<li><strong>时间戳（timestamp）</strong>：事件发生的精确时间，格式为 <code>YYYY-MM-DDTHH:MM:SSZ</code>（ISO 8601）。</li>
+<li><strong>设备唯一标识符（device_id）</strong>：用于区分不同的 pH 计。</li>
+<li><strong>事件类型（event_type）</strong>：<code>"CalibrationLog"</code> 或 <code>"CalibrationFailed"</code>。</li>
+<li><strong>电极信息（electrode_info）</strong>：包含 <code>sn</code>（序列号），<code>model</code>（型号），<code>fw_ver</code>（固件版本）。</li>
+</ul>
+<h3 id="832-success-log-format">8.3.2 成功日志格式（Success Log Format）</h3>
+<p>当 <code>event_type</code> 为 <code>"CalibrationLog"</code> 且 <code>status</code> 为 <code>"Success"</code> 时，<code>data</code> 对象必须包含：</p>
+<p>json</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  &quot;timestamp&quot;: &quot;2025-09-28T22:35:00Z&quot;,
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  &quot;device_id&quot;: &quot;PHM-00123&quot;,
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  &quot;event_type&quot;: &quot;CalibrationLog&quot;,
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  &quot;electrode_info&quot;: {
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    &quot;sn&quot;: &quot;PH123456&quot;,
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    &quot;model&quot;: &quot;XYZ-ABC&quot;,
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    &quot;fw_ver&quot;: &quot;1.2.3&quot;
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  },
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  &quot;status&quot;: &quot;Success&quot;,
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  &quot;data&quot;: {
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    &quot;temperature_c&quot;: 26.2,
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    &quot;slope_percent&quot;: 99.7,
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    &quot;offset_mv&quot;: -2.5,
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    &quot;verification_error_ph&quot;: 0.01,
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    &quot;retry_count&quot;: 0,
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>    &quot;calibration_points&quot;: [
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>      {&quot;buffer_ph&quot;: 7.00, &quot;measured_mv&quot;: -5.1},
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>      {&quot;buffer_ph&quot;: 4.00, &quot;measured_mv&quot;: 177.2}
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    ]
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  }
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>}
+</code></pre></div>
+<h3 id="833-failure-log-format">8.3.3 失败日志格式（Failure Log Format）</h3>
+<p>当 <code>event_type</code> 为 <code>"CalibrationFailed"</code> 时，<code>data</code> 对象必须包含：</p>
+<p>json</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  &quot;timestamp&quot;: &quot;2025-09-28T22:34:00Z&quot;,
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  &quot;device_id&quot;: &quot;PHM-00123&quot;,
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  &quot;event_type&quot;: &quot;CalibrationFailed&quot;,
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  &quot;electrode_info&quot;: {
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    &quot;sn&quot;: &quot;PH123456&quot;,
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    &quot;model&quot;: &quot;XYZ-ABC&quot;,
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    &quot;fw_ver&quot;: &quot;1.2.3&quot;
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  },
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  &quot;status&quot;: &quot;Failed&quot;,
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>  &quot;data&quot;: {
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    &quot;fail_code&quot;: &quot;FAIL_CODE_SLOPE_LOW&quot;,
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    &quot;fail_stage&quot;: &quot;SLOPE_CHECK&quot;,
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    &quot;retries_remaining&quot;: 1
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>  }
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>}
+</code></pre></div>
+<h3 id="834-transmission-protocol-and-acknowledgement">8.3.4 传输协议与确认机制（Transmission Protocol and Acknowledgement）</h3>
+<ul>
+<li>
+<p><strong>网络角色</strong>：<strong>上位机作为控制中心，以TCP客户端身份主动连接主控板，下发<code>开始校准</code>等指令，并接收主控板返回的校准结果与日志。</strong></p>
+</li>
+<li>
+<p><strong>协议</strong>：使用 <strong>TCP</strong> 协议，以保证数据传输的可靠性和顺序性。</p>
+</li>
+<li>
+<p><strong>确认机制</strong>：上位机在成功接收、解析并存储日志数据后，必须向主控板发送一个确认回执（<strong>ACK</strong>）消息。ACK建议为JSON格式：<code>{"status": "ack", "received_log_id": "12345"}</code>。主控板只有在收到此 ACK 后，才能认为该条日志已成功记录。应实现超时重传机制以应对网络异常。</p>
+</li>
+</ul>
+<hr />
+<div style="page-break-after: always;"></div>
+
+<hr />
+<h4 id="ph">附录：智能pH电极补偿算法</h4>
+<p>智能pH电极软件算法是补偿的核心，它在<strong>校准</strong>和<strong>测量</strong>两个阶段分别起作用：</p>
+<p><strong>阶段 A: 在校准时</strong>                                             </p>
+<p>这是实现精确补偿的<strong>最关键步骤</strong>。我们之前讨论的需求文档中的流程，正是基于此。</p>
+<ol>
+<li><strong>获取实时温度 (T)</strong>: 软件从ATC传感器读取当前的溶液温度，例如 <code>28.0°C</code>。</li>
+<li><strong>校正缓冲液pH值</strong>: 当提示用户放入pH 4.01缓冲液时，智能pH电极软件会查询内部存储的“缓冲液温度-pH对照表”，找到pH 4.01缓冲液在 <code>28.0°C</code> 时的<strong>真实理论pH值</strong>，比如是 <code>4.02</code>。</li>
+<li><strong>建立数据对</strong>: 软件测量此时电极的毫伏读数 <code>mV_1</code>。于是它得到了第一个精确的校准数据对：<code>(pH 4.02, mV_1)</code>。</li>
+<li><strong>重复过程</strong>: 对第二种缓冲液（如pH 9.18）也执行同样的操作，得到第二个数据对，例如 <code>(pH 9.13, mV_2)</code>。</li>
+<li><strong>计算实际斜率</strong>: 软件利用这两个经过了温度补偿的精确数据对，计算出电极<strong>在当前28.0°C下的实际工作斜率</strong>和截距。</li>
+<li><code>Slope_actual = (mV_2 - mV_1) / (9.13 - 4.02)</code></li>
+<li>这个计算出的 <code>Slope_actual</code> 自然地反映了电极在28.0°C时的真实响应度。</li>
+</ol>
+<p><strong>阶段 B: 在测量时</strong></p>
+<ol>
+<li><strong>获取实时数据</strong>: 软件测量未知样品的毫伏读数 <code>mV_sample</code>。</li>
+<li><strong>应用校准参数</strong>: 软件使用<strong>在校准阶段计算出的</strong> <code>Slope_actual</code> 和截距，来将 <code>mV_sample</code> 转换为最终的pH值。</li>
+<li><code>pH_final = (mV_sample - Intercept) / Slope_actual</code></li>
+</ol>
+<p>因为 <code>Slope_actual</code> 本身就是在特定温度下、基于精确的理论pH值得出的，所以用它来计算样品的pH值，就<strong>自动地、隐式地</strong>完成了对电极斜率的温度补偿。</p>
+<h3 id="_13">总结</h3>
+<p>简单来说，温度补偿的实现流程就是：</p>
+<ol>
+<li><strong>用ATC探头实时测量温度。</strong></li>
+<li><strong>校准时</strong>：根据实时温度，查表修正标准缓冲液的理论pH值，然后用这个修正值去计算电极的<strong>实际斜率</strong>。</li>
+<li><strong>测量时</strong>：用这个在特定温度下得到的<strong>实际斜率</strong>，将样品的mV读数转换成最终的pH值。</li>
+</ol>
+<p>通过这个闭环过程，仪器就能够确保无论是在15°C还是35°C进行测量，都能得到准确可靠的pH读数。</p>
+<hr />
+<div style="page-break-after: always;"></div>
+
+<h2 id="ph_1"><strong>针对三信pH电极的控制逻辑说明</strong></h2>
+<h3 id="ph_2"><strong>主控板与三信pH电极的完整校准交互流程 (增强版)</strong></h3>
+<p><strong>核心思想</strong>：由嵌入式主控板（Master）作为主导，智能pH电极（Slave）作为执行者。校准结果读取指令用于在两点校准后立即进行一次“健全性检查 (Sanity Check)”。</p>
+<h3 id="step-0"><strong>校准前准备 (Step 0)</strong></h3>
+<ol>
+<li><strong>逻辑处理</strong>: 在正式开始校准前，主控板应获取电极的身份信息，用于日志记录和追溯。</li>
+<li><strong>通信交互</strong>:</li>
+<li>主控板向电极发送 <strong>Modbus读指令 (03H)</strong>，读取寄存器 <code>0010H-0015H</code> 获取<strong>序列号</strong>。</li>
+<li>主控板发送 <strong>Modbus读指令 (03H)</strong>，读取寄存器 <code>0018H-0019H</code> 获取<strong>硬件和软件版本</strong>。</li>
+<li>主控板将这些信息保存在内存中，待后续生成日志时使用。</li>
+</ol>
+<h3 id="step-1"><strong>阶段一：启动与稳定性监控 (Step 1)</strong></h3>
+<p><strong>逻辑处理</strong>: 主控板接收到上位机的“开始校准”指令。首先，必须确认电极当前处于空闲状态，然后等待电极读数稳定。</p>
+<ol>
+<li><strong>通信交互</strong>:</li>
+<li><strong>查询状态</strong>: 主控板发送 <strong>Modbus读指令 (03H)</strong>，读取状态寄存器 <code>0100H</code>。</li>
+<li><strong>逻辑判断</strong>: 主控板检查返回值是否为 <code>1</code> (测量状态)。</li>
+<li><strong>监控稳定</strong>: 主控板进入循环，每隔几秒就发送 <strong>Modbus读指令 (03H)</strong> 读取mV值寄存器 <code>1100H-1101H</code>。</li>
+<li><strong>逻辑判断</strong>: 主控板在内部实现稳定性算法（例如，60秒内mV读数变化小于1mV）。</li>
+</ol>
+<h3 id="step-2"><strong>阶段二：两点校准执行 (Step 2)</strong></h3>
+<ol>
+<li><strong>逻辑处理 (第一点)</strong>: 待第一种缓冲液（例如 pH 7.00）的读数稳定后，主控板正式向电极发起该点的校准。</li>
+<li><strong>通信交互 (第一点)</strong>:</li>
+<li>主控板发送 <strong>Modbus写指令 (06H)</strong>，将第一种缓冲液的标称pH值（例如 <code>700</code>）写入校准寄存器 <code>1120H</code>。</li>
+<li>主控板<strong>轮询</strong>状态寄存器 <code>0100H</code>，直到其值从 <code>2</code> (校准中) 变回 <code>1</code> (测量)，表示第一点校准完成。</li>
+<li><strong>逻辑处理 &amp; 通信交互 (第二点)</strong>: 主控板重复<strong>阶段一的稳定性监控</strong>和<strong>阶段二的校准执行</strong>，但这次是针对第二种缓冲液（例如 pH 4.01）。</li>
+</ol>
+<h3 id="sanity-check-"><strong>阶段三：流程健全性检查 (Sanity Check) - (新增步骤)</strong></h3>
+<ol>
+<li><strong>逻辑处理</strong>: 在两点校准命令都发送完毕后，主控板立即验证电极是否正确理解并执行了操作。</li>
+<li><strong>通信交互</strong>:</li>
+<li>主控板发送 <strong>Modbus读指令 (03H)</strong>，读取<strong>校准结果</strong>寄存器 <code>1121H</code>。</li>
+<li>电极返回一个两字节的状态码。</li>
+<li><strong>逻辑判断</strong>:</li>
+<li><strong>检查点数</strong>: 主控板检查返回值的<strong>高位字节</strong>是否为 <code>0x02</code>，确认电极记录的是<strong>两点</strong>校准。</li>
+<li><strong>检查标液组合</strong>: 主控板检查返回值的<strong>低位字节</strong>是否为预期的组合码（例如，对于pH 7.00和4.01，预期值为 <code>0x06</code>）。</li>
+<li><strong>失败处理</strong>: <strong>任何一项不匹配</strong>，都意味着流程中出现了意外错误。主控板应记录失败原因（例如 <code>FAIL_CODE_SANITY_CHECK_MISMATCH</code>），并立即跳转至 <strong>“失败与重试逻辑” (Step 6)</strong>。</li>
+</ol>
+<h3 id="step-4"><strong>阶段四：参数判断与回测验证 (Step 4)</strong></h3>
+<ol>
+<li><strong>逻辑处理</strong>: 如果健全性检查通过，主控板继续进行定量的性能参数判断。</li>
+<li><strong>通信交互 (参数判断)</strong>:</li>
+<li>主控板发送 <strong>Modbus读指令 (03H)</strong>，读取电极的校准数据寄存器 <code>1130H</code> 及之后地址，获取<strong>校准温度</strong>、<strong>零点 (Offset)</strong> 和<strong>斜率百分比 (Slope %)</strong>。</li>
+<li><strong>逻辑判断</strong>:<ul>
+<li>判断返回的 <strong>Slope %</strong> 是否在 <code>90.0% ~ 105.0%</code> 范围内。</li>
+<li>判断返回的 <strong>Offset</strong> 是否在 <code>-30.0 mV ~ +30.0 mV</code> 范围内。</li>
+<li><strong>任一失败</strong>，流程跳转至 <strong>“失败与重试逻辑” (Step 6)</strong>。</li>
+</ul>
+</li>
+<li><strong>逻辑处理 &amp; 通信交互 (回测验证)</strong>:</li>
+<li><strong>如果上述判断通过</strong>，主控板进入回测流程。</li>
+<li>把pH电极放入第三种缓冲液，主控板再次执行<strong>阶段一的稳定性监控</strong>。</li>
+<li>稳定后，主控板发送 <strong>Modbus读指令 (03H)</strong>，读取<strong>当前pH读数</strong> (<code>1102H</code>) 和<strong>当前温度</strong> (<code>1104H</code>)。</li>
+<li><strong>逻辑判断</strong>:<ul>
+<li>主控板根据刚读取的<strong>当前温度</strong>，查阅内部的<code>Table1</code>，计算出验证液的<strong>理论pH值</strong>。</li>
+<li>计算偏差：<code>| 读取的pH值 - 理论pH值 |</code>，并判断是否 <code>≤ 0.05 pH</code>。</li>
+<li><strong>如果失败</strong>，流程跳转至 <strong>“失败与重试逻辑” (Step 6)</strong>。</li>
+</ul>
+</li>
+</ol>
+<h3 id="step-5"><strong>阶段五：流程结束 (Step 5)</strong></h3>
+<ol>
+<li><strong>逻辑处理 (成功)</strong>: 如果所有判断都通过，则校准成功。</li>
+<li><strong>通信交互 (成功)</strong>:</li>
+<li>主控板向电极发送 <strong>Modbus写指令 (06H)</strong>，将<strong>保存指令 <code>0x3535</code></strong> 写入寄存器 <code>0101H</code>。</li>
+<li>主控板整理<strong>成功日志</strong>，通过网口发送给上位机，并等待ACK确认。</li>
+</ol>
+<h3 id="step-6"><strong>失败与重试逻辑 (Step 6)</strong></h3>
+<ol>
+<li><strong>逻辑处理</strong>: 在阶段三或四的任一判断失败后，主控板进入此逻辑。</li>
+<li><strong>通信交互</strong>:</li>
+<li><strong>如果可以重试</strong>: 发送<strong>失败日志</strong>，等待重试指令，然后<strong>返回 Step 1</strong>。</li>
+<li><strong>如果重试用尽</strong>: 发送<strong>最终失败日志</strong>，并向电极发送<strong>恢复理论状态指令 <code>0x35AC</code></strong> (<code>0101H</code>)，进入锁定状态。</li>
+</ol>
+<h3 id="_14">备注</h3>
+<p>校准结果：<strong>寄存器地址：1121H </strong>，推测性解释：</p>
+<p>在这个设计中，寄存器的一个字节（8位）中的每一位（bit）都被分配给一个特定的标准缓冲液。当某个缓冲液被用于校准时，对应的位就被设置为 <code>1</code>。</p>
+<p><strong>1. 假设的解码表</strong></p>
+<p>我们可以根据手册中列出的标准溶液，为低位字节的每一位创建一个假设的对应关系：</p>
+<table>
+<thead>
+<tr>
+<th>位 (Bit)</th>
+<th>二进制值</th>
+<th>十进制值</th>
+<th>代表的缓冲液 (推测)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bit 0</td>
+<td><code>0000 0001</code></td>
+<td>1</td>
+<td>pH 1.68</td>
+</tr>
+<tr>
+<td><strong>Bit 1</strong></td>
+<td><strong><code>0000 0010</code></strong></td>
+<td><strong>2</strong></td>
+<td><strong>pH 4.00 / 4.01</strong></td>
+</tr>
+<tr>
+<td><strong>Bit 2</strong></td>
+<td><strong><code>0000 0100</code></strong></td>
+<td><strong>4</strong></td>
+<td><strong>pH 6.86 / 7.00</strong></td>
+</tr>
+<tr>
+<td>Bit 3</td>
+<td><code>0000 1000</code></td>
+<td>8</td>
+<td>pH 9.18</td>
+</tr>
+<tr>
+<td>Bit 4</td>
+<td><code>0001 0000</code></td>
+<td>16</td>
+<td>pH 10.01</td>
+</tr>
+<tr>
+<td>Bit 5</td>
+<td><code>0010 0000</code></td>
+<td>32</td>
+<td>pH 12.45 / 12.46</td>
+</tr>
+<tr>
+<td>Bit 6</td>
+<td><code>0100 0000</code></td>
+<td>64</td>
+<td>(备用)</td>
+</tr>
+<tr>
+<td>Bit 7</td>
+<td><code>1000 0000</code></td>
+<td>128</td>
+<td>(备用)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 解码过程</strong></p>
+<p>现在，我们来看一下手册中返回的值 <code>06</code>（十六进制）：</p>
+<ul>
+<li><strong>步骤 1: 转换为二进制</strong> 十六进制的 <code>06</code> 转换为二进制是 <code>0000 0110</code>。</li>
+<li><strong>步骤 2: 查看哪些位被设为 "1"</strong> 在 <code>0000 0110</code> 中，<strong>Bit 1</strong> 和 <strong>Bit 2</strong> 被设置成了 <code>1</code>。</li>
+<li><strong>步骤 3: 查找对应的缓冲液</strong> 根据我们上面假设的表格：</li>
+<li>Bit 1 (<code>...010...</code>) ➞ 代表 <strong>pH 4.00 / 4.01</strong></li>
+<li>Bit 2 (<code>...100...</code>) ➞ 代表 <strong>pH 6.86 / 7.00</strong></li>
+<li><strong>步骤 4: 组合结果</strong> 因为 Bit 1 和 Bit 2 同时被激活，所以这个值代表了 <strong>pH 4.00 和 pH 7.00</strong> 这两种缓冲液都被用于校准。</li>
+</ul>
+<p>从数值上看，就是将激活的位的十进制值相加：<code>2</code> (代表pH 4.00) + <code>4</code> (代表pH 7.00) = <code>6</code>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.sections", "navigation.instant", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
