@@ -81,9 +81,11 @@ class GitHubUsersManager {
         console.log('Config updated in another tab, applying...');
         try {
           const incoming = JSON.parse(e.newValue);
-          const merged = this.mergeConfigs(this.getCurrentConfig(), incoming);
-          // 来自其他标签的更新，静默应用，避免再次写回触发回环
-          this.applyConfig(merged, { silent: true });
+          const current = this.getCurrentConfig();
+          // 仅当对方更新更新（lastUpdated 更大）才替换本地，防止旧端覆盖
+          if (this.isNewerConfig(incoming, current)) {
+            this.applyConfigReplace(incoming, { silent: true });
+          }
         } catch (error) {
           console.error('Failed to parse config from storage:', error);
         }
@@ -96,9 +98,12 @@ class GitHubUsersManager {
       this.broadcastChannel.onmessage = (event) => {
         if (event.data.type === 'user-update') {
           console.log('User update received via broadcast:', event.data.config);
-          const merged = this.mergeConfigs(this.getCurrentConfig(), event.data.config);
-          // 广播属于主动端推送，静默应用避免本地再次广播
-          this.applyConfig(merged, { silent: true });
+          const incoming = event.data.config;
+          const current = this.getCurrentConfig();
+          if (this.isNewerConfig(incoming, current)) {
+            // 使用替换模式，确保删除不会被并集合并回去
+            this.applyConfigReplace(incoming, { silent: true });
+          }
         }
       };
     }
@@ -539,6 +544,26 @@ class GitHubUsersManager {
     }
     
     console.log('Config applied:', merged);
+  }
+
+  // 直接替换当前配置（用于已确认来源更新更新的情况，比如从仓库拉取或主动端广播）
+  applyConfigReplace(config, options = {}) {
+    if (config.allowedUsers) {
+      if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = config.allowedUsers;
+      if (window.githubAuth && window.githubAuth.config) window.githubAuth.config.allowedUsers = config.allowedUsers;
+    }
+    if (config.adminUsers) {
+      if (window.AUTH_CONFIG) window.AUTH_CONFIG.adminUsers = config.adminUsers;
+      if (window.githubAuth && window.githubAuth.config) window.githubAuth.config.adminUsers = config.adminUsers;
+    }
+    const next = JSON.stringify(config);
+    if (!options.silent) {
+      localStorage.setItem('fl510_docs_config', next);
+    } else {
+      const prev = localStorage.getItem('fl510_docs_config');
+      if (prev !== next) localStorage.setItem('fl510_docs_config', next);
+    }
+    console.log('Config replaced:', config);
   }
 
   // 若可用，尝试向服务器汇聚最新配置（仓库/Gist）
