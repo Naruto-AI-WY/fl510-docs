@@ -79,6 +79,13 @@ class AdminPanel {
     this.loadSavedConfig(); // 确保显示前加载最新配置
     this.createAdminModal();
     this.isVisible = true;
+    
+    // 如果GitHub用户管理器可用，自动加载用户列表
+    if (window.githubUsersManager) {
+      setTimeout(() => {
+        window.githubUsersManager.updateUsersList();
+      }, 1000);
+    }
   }
 
   // 隐藏管理面板
@@ -896,51 +903,38 @@ window.addEventListener('userInfoCreated', () => {
 
 // 添加配置同步标签页方法
 AdminPanel.prototype.createSyncTab = function() {
-  const isSyncEnabled = window.configSync && window.configSync.githubToken;
-  
   return `
     <div class="admin-section">
-      <h4>🔗 跨浏览器配置同步</h4>
-      <div class="sync-status">
-        <p><strong>当前状态：</strong> ${isSyncEnabled ? '✅ 已启用同步' : '❌ 未启用同步'}</p>
-      </div>
+      <h4>👥 GitHub用户管理</h4>
+      <p>系统会自动从GitHub仓库同步用户配置，无需手动输入Token。</p>
       
-      ${!isSyncEnabled ? `
-        <div class="sync-setup">
-          <h5>设置GitHub同步</h5>
-          <p>为了在不同浏览器间同步用户配置，需要设置GitHub Personal Access Token：</p>
-          <ol>
-            <li>访问 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token设置</a></li>
-            <li>点击 "Generate new token" → "Generate new token (classic)"</li>
-            <li>选择 "gist" 权限</li>
-            <li>复制生成的token</li>
-            <li>在下方输入框中粘贴token</li>
-          </ol>
-          <div class="token-input">
-            <input type="password" id="github-token-input" placeholder="输入GitHub Personal Access Token">
-            <button onclick="try { console.log('Checking configSync:', window.configSync); if(window.configSync && window.configSync.setupSync && typeof window.configSync.setupSync === 'function') { console.log('Calling setupSync'); window.configSync.setupSync(); } else { console.error('ConfigSync not available:', { configSync: !!window.configSync, setupSync: !!window.configSync?.setupSync, type: typeof window.configSync?.setupSync }); alert('配置同步功能未加载，请刷新页面重试'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错：' + e.message); }">启用同步</button>
+      <div class="github-users-section">
+        <div class="form-group">
+          <label for="new-username">添加新用户:</label>
+          <div style="display: flex; gap: 10px; margin: 10px 0;">
+            <input type="text" id="new-username" placeholder="输入GitHub用户名" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <button onclick="githubUsersManager.addUser()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">添加用户</button>
           </div>
         </div>
-      ` : `
-            <div class="sync-actions">
-              <h5>同步操作</h5>
-              <div class="sync-buttons">
-                <button onclick="try { if(window.configSync && window.configSync.syncConfig) { window.configSync.syncConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">🔄 立即同步</button>
-                <button onclick="try { if(window.configSync && window.configSync.loadConfig) { window.configSync.loadConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">📥 从云端加载</button>
-                <button onclick="try { if(window.configSync && window.configSync.disableSync) { window.configSync.disableSync(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn danger">❌ 禁用同步</button>
-                <button onclick="try { console.log('Manual init attempt'); if(typeof initializeConfigSync === 'function') { initializeConfigSync(); alert('已尝试重新初始化配置同步功能'); } else { alert('初始化函数不可用'); } } catch(e) { console.error('Manual init error:', e); alert('手动初始化失败：' + e.message); }" class="sync-btn" style="background: #6c757d;">🔧 重新初始化</button>
-              </div>
-            </div>
-      `}
+        
+        <div class="form-actions" style="margin: 15px 0;">
+          <button onclick="githubUsersManager.syncUsers()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">🔄 同步用户</button>
+          <button onclick="githubUsersManager.exportConfig()" style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">📤 导出配置</button>
+        </div>
+        
+        <div id="users-list-container" style="margin-top: 15px;">
+          <h5>当前用户列表:</h5>
+          <div id="users-list" style="background: #f8f9fa; padding: 10px; border-radius: 4px; max-height: 200px; overflow-y: auto;">
+            <p>正在加载用户列表...</p>
+          </div>
+        </div>
+      </div>
       
-      <div class="sync-info">
-        <h5>同步说明</h5>
-        <ul>
-          <li>✅ 配置会自动保存到您的GitHub Gist中</li>
-          <li>✅ 在任何浏览器登录后都能访问相同的用户配置</li>
-          <li>✅ 配置是私有的，只有您能访问</li>
-          <li>⚠️ 需要GitHub账号和Personal Access Token</li>
-        </ul>
+      <div class="sync-status" style="margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 4px;">
+        <h5>自动同步状态</h5>
+        <p>✅ 自动同步已启用 - 每30分钟自动从GitHub同步用户配置</p>
+        <p>🌐 跨浏览器同步 - 所有浏览器都会自动获取最新的用户配置</p>
+        <p>📝 无需Token - 直接使用GitHub公开API，无需个人访问令牌</p>
       </div>
     </div>
   `;
