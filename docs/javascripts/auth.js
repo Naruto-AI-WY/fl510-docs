@@ -117,16 +117,30 @@ class GitHubAuth {
   // 从服务器加载配置
   async loadConfigFromServer() {
     try {
-      if (!window.configSync || !window.configSync.githubToken) {
-        console.log('No server sync configured');
+      // 等待配置同步系统初始化
+      let retries = 0;
+      while (!window.configSync || !window.configSync.initialized) {
+        if (retries > 10) {
+          console.log('ConfigSync initialization timeout');
+          return null;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+      }
+      
+      if (!window.configSync.githubToken) {
+        console.log('No GitHub token configured');
         return null;
       }
 
+      console.log('Loading config from server...');
       const cloudConfig = await window.configSync.loadConfig();
       if (cloudConfig && (cloudConfig.allowedUsers || cloudConfig.adminUsers)) {
+        console.log('Server config loaded successfully:', cloudConfig);
         return cloudConfig;
       }
       
+      console.log('No server config found');
       return null;
     } catch (error) {
       console.error('Failed to load config from server:', error);
@@ -155,9 +169,23 @@ class GitHubAuth {
   // 同步配置到服务器
   async syncConfigToServer() {
     try {
-      if (window.configSync && window.configSync.syncConfig) {
+      // 等待配置同步系统初始化
+      let retries = 0;
+      while (!window.configSync || !window.configSync.initialized) {
+        if (retries > 10) {
+          console.log('ConfigSync initialization timeout for sync');
+          return;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+      }
+      
+      if (window.configSync && window.configSync.syncConfig && window.configSync.githubToken) {
+        console.log('Syncing config to server...');
         await window.configSync.syncConfig();
         console.log('Config synced to server successfully');
+      } else {
+        console.log('No server sync available');
       }
     } catch (error) {
       console.error('Failed to sync config to server:', error);

@@ -695,6 +695,49 @@ function addDebugButton() {
 
 // 页面加载完成后添加调试按钮
 setTimeout(addDebugButton, 2000);
+
+// 自动检查配置同步状态
+function checkConfigSyncStatus() {
+  console.log('Checking config sync status...');
+  
+  // 检查是否有GitHub Token
+  const hasToken = !!localStorage.getItem('github_sync_token');
+  const hasGistId = !!localStorage.getItem('fl510_gist_id');
+  
+  console.log('Sync status:', { hasToken, hasGistId, configSync: !!window.configSync });
+  
+  // 如果配置同步可用，尝试从服务器加载配置
+  if (window.configSync && window.configSync.initialized && hasToken) {
+    console.log('Attempting to load config from server...');
+    window.configSync.loadConfig().then(config => {
+      if (config && (config.allowedUsers || config.adminUsers)) {
+        console.log('Server config loaded:', config);
+        
+        // 更新本地配置
+        const currentConfig = JSON.parse(localStorage.getItem('fl510_docs_config') || '{}');
+        const mergedConfig = {
+          allowedUsers: [...new Set([...(config.allowedUsers || []), ...(currentConfig.allowedUsers || [])])],
+          adminUsers: [...new Set([...(config.adminUsers || []), ...(currentConfig.adminUsers || [])])]
+        };
+        
+        localStorage.setItem('fl510_docs_config', JSON.stringify(mergedConfig));
+        
+        // 更新全局配置
+        if (window.AUTH_CONFIG) {
+          window.AUTH_CONFIG.allowedUsers = mergedConfig.allowedUsers;
+          window.AUTH_CONFIG.adminUsers = mergedConfig.adminUsers;
+        }
+        
+        console.log('Config merged and updated:', mergedConfig);
+      }
+    }).catch(error => {
+      console.error('Failed to load config from server:', error);
+    });
+  }
+}
+
+// 页面加载完成后检查配置同步状态
+setTimeout(checkConfigSyncStatus, 3000);
 </script>
 
 <!-- 调试样式 -->

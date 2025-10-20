@@ -755,6 +755,7 @@ function initializeConfigSync() {
     const savedToken = localStorage.getItem('github_sync_token');
     if (savedToken) {
       window.configSync.githubToken = savedToken;
+      realConfigSync.githubToken = savedToken;
       console.log('Loaded saved GitHub token');
     }
     
@@ -762,7 +763,14 @@ function initializeConfigSync() {
     const savedGistId = localStorage.getItem('fl510_gist_id');
     if (savedGistId) {
       window.configSync.gistId = savedGistId;
+      realConfigSync.gistId = savedGistId;
       console.log('Loaded saved Gist ID:', savedGistId);
+    }
+    
+    // 设置定期同步
+    if (savedToken) {
+      realConfigSync.setupPeriodicSync();
+      console.log('Periodic sync enabled');
     }
     
     window.configSync.initialized = true;
