@@ -13,6 +13,55 @@ class GitHubUsersManager {
     this.setupCrossTabSync();
   }
 
+  // 获取当前全局/本地配置
+  getCurrentConfig() {
+    try {
+      const globalCfg = (window.AUTH_CONFIG && (window.AUTH_CONFIG.allowedUsers || window.AUTH_CONFIG.adminUsers)) ? window.AUTH_CONFIG : null;
+      const localCfgStr = localStorage.getItem('fl510_docs_config');
+      const localCfg = localCfgStr ? JSON.parse(localCfgStr) : null;
+      return globalCfg || localCfg || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // 比较配置新旧（基于 lastUpdated）
+  isNewerConfig(incoming, current) {
+    try {
+      if (!incoming) return false;
+      if (!current) return true;
+      const inTime = incoming.lastUpdated ? Date.parse(incoming.lastUpdated) : 0;
+      const curTime = current.lastUpdated ? Date.parse(current.lastUpdated) : 0;
+      return inTime >= curTime;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  // 合并配置（取用户并集，时间取较新）
+  mergeConfigs(a, b) {
+    const res = { allowedUsers: [], adminUsers: [], lastUpdated: new Date().toISOString() };
+    const aAllowed = (a && a.allowedUsers) ? a.allowedUsers : [];
+    const bAllowed = (b && b.allowedUsers) ? b.allowedUsers : [];
+    const aAdmins = (a && a.adminUsers) ? a.adminUsers : [];
+    const bAdmins = (b && b.adminUsers) ? b.adminUsers : [];
+    res.allowedUsers = Array.from(new Set([...aAllowed, ...bAllowed]));
+    res.adminUsers = Array.from(new Set([...aAdmins, ...bAdmins]));
+    const times = [a && a.lastUpdated, b && b.lastUpdated].filter(Boolean).map(t => Date.parse(t));
+    if (times.length) res.lastUpdated = new Date(Math.max(...times)).toISOString();
+    return res;
+  }
+
+  // 只有当传入配置更新更“新”时才应用
+  maybeApplyConfig(incoming) {
+    const current = this.getCurrentConfig();
+    if (!current || this.isNewerConfig(incoming, current)) {
+      this.applyConfig(incoming);
+      return true;
+    }
+    return false;
+  }
+
   // 设置自动同步
   setupAutoSync() {
     // 每30分钟自动同步一次
@@ -32,7 +81,7 @@ class GitHubUsersManager {
         console.log('Config updated in another tab, applying...');
         try {
           const config = JSON.parse(e.newValue);
-          this.applyConfig(config);
+          this.maybeApplyConfig(config);
         } catch (error) {
           console.error('Failed to parse config from storage:', error);
         }
@@ -45,7 +94,7 @@ class GitHubUsersManager {
       this.broadcastChannel.onmessage = (event) => {
         if (event.data.type === 'user-update') {
           console.log('User update received via broadcast:', event.data.config);
-          this.applyConfig(event.data.config);
+          this.maybeApplyConfig(event.data.config);
         }
       };
     }
@@ -83,10 +132,14 @@ class GitHubUsersManager {
       // 首先尝试从GitHub仓库获取配置（最可靠的方法）
       const repoConfig = await this.getConfigFromGitHub();
       if (repoConfig) {
-        console.log('Using GitHub repo config:', repoConfig);
-        this.applyConfig(repoConfig);
-        // 同时保存到本地存储，确保下次加载更快
-        localStorage.setItem('fl510_docs_config', JSON.stringify(repoConfig));
+        const current = this.getCurrentConfig();
+        // 如果本地更新更新更“新”，则合并后再应用，避免被旧仓库覆盖
+        const finalCfg = current && !this.isNewerConfig(repoConfig, current)
+          ? this.mergeConfigs(current, repoConfig)
+          : repoConfig;
+        console.log('Using GitHub repo config:', finalCfg);
+        this.applyConfig(finalCfg);
+        localStorage.setItem('fl510_docs_config', JSON.stringify(finalCfg));
         return true;
       }
       
