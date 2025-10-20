@@ -470,32 +470,33 @@ class GitHubUsersManager {
 
   // 应用配置
   applyConfig(config) {
-    if (config.allowedUsers) {
+    // 与当前配置做并集合并，避免被旧端缩减覆盖
+    const current = this.getCurrentConfig();
+    const merged = this.mergeConfigs(current, config);
+
+    if (merged.allowedUsers) {
       if (window.AUTH_CONFIG) {
-        window.AUTH_CONFIG.allowedUsers = config.allowedUsers;
+        window.AUTH_CONFIG.allowedUsers = merged.allowedUsers;
       }
       if (window.githubAuth && window.githubAuth.config) {
-        window.githubAuth.config.allowedUsers = config.allowedUsers;
+        window.githubAuth.config.allowedUsers = merged.allowedUsers;
       }
     }
     
-    if (config.adminUsers) {
+    if (merged.adminUsers) {
       if (window.AUTH_CONFIG) {
-        window.AUTH_CONFIG.adminUsers = config.adminUsers;
+        window.AUTH_CONFIG.adminUsers = merged.adminUsers;
       }
       if (window.githubAuth && window.githubAuth.config) {
-        window.githubAuth.config.adminUsers = config.adminUsers;
+        window.githubAuth.config.adminUsers = merged.adminUsers;
       }
     }
 
-    // 保存到本地存储
-    localStorage.setItem('fl510_docs_config', JSON.stringify(config));
+    // 保存到本地存储（触发其他标签 storage 事件）
+    localStorage.setItem('fl510_docs_config', JSON.stringify(merged));
     
-    console.log('Config applied:', config);
-    // 应用后也写入 localStorage（触发其他标签 storage 事件）
-    try {
-      localStorage.setItem('fl510_docs_config', JSON.stringify(config));
-    } catch (_) {}
+    console.log('Config applied:', merged);
+    try { localStorage.setItem('fl510_docs_config', JSON.stringify(merged)); } catch (_) {}
   }
 
   // 若可用，尝试向服务器汇聚最新配置（仓库/Gist）
