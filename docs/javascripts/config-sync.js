@@ -457,31 +457,74 @@ window.addEventListener('error', function(event) {
   event.preventDefault();
 });
 
+// 立即创建占位符对象，防止未定义错误
+window.configSync = {
+  setupSync: () => {
+    console.warn('ConfigSync not yet initialized, retrying...');
+    setTimeout(() => {
+      if (window.configSync && window.configSync.setupSync !== arguments.callee) {
+        window.configSync.setupSync();
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
+    }, 100);
+  },
+  syncConfig: () => {
+    console.warn('ConfigSync not yet initialized, retrying...');
+    setTimeout(() => {
+      if (window.configSync && window.configSync.syncConfig !== arguments.callee) {
+        window.configSync.syncConfig();
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
+    }, 100);
+  },
+  loadConfig: () => {
+    console.warn('ConfigSync not yet initialized, retrying...');
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (window.configSync && window.configSync.loadConfig !== arguments.callee) {
+          window.configSync.loadConfig().then(resolve);
+        } else {
+          resolve(null);
+        }
+      }, 100);
+    });
+  },
+  disableSync: () => {
+    console.warn('ConfigSync not yet initialized, retrying...');
+    setTimeout(() => {
+      if (window.configSync && window.configSync.disableSync !== arguments.callee) {
+        window.configSync.disableSync();
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
+    }, 100);
+  }
+};
+
 // 延迟初始化配置同步系统，确保DOM完全加载
 function initializeConfigSync() {
-  if (window.configSync) {
+  if (window.configSync && window.configSync.initialized) {
     return; // 已经初始化过了
   }
   
   try {
-    window.configSync = new ConfigSync();
+    const realConfigSync = new ConfigSync();
     
-    // 确保全局方法可用（兼容性处理）
-    window.configSync.setupSync = window.configSync.setupSync.bind(window.configSync);
-    window.configSync.syncConfig = window.configSync.syncConfig.bind(window.configSync);
-    window.configSync.loadConfig = window.configSync.loadConfig.bind(window.configSync);
-    window.configSync.disableSync = window.configSync.disableSync.bind(window.configSync);
+    // 替换占位符对象
+    Object.assign(window.configSync, realConfigSync);
+    window.configSync.initialized = true;
     
     console.log('ConfigSync initialized successfully');
   } catch (error) {
     console.error('Failed to initialize ConfigSync:', error);
-    // 创建一个空的配置同步对象作为备用
-    window.configSync = {
-      setupSync: () => alert('配置同步功能初始化失败'),
-      syncConfig: () => alert('配置同步功能初始化失败'),
-      loadConfig: () => Promise.resolve(null),
-      disableSync: () => alert('配置同步功能初始化失败')
-    };
+    // 保持占位符对象，但标记为失败
+    window.configSync.initialized = false;
+    window.configSync.setupSync = () => alert('配置同步功能初始化失败');
+    window.configSync.syncConfig = () => alert('配置同步功能初始化失败');
+    window.configSync.loadConfig = () => Promise.resolve(null);
+    window.configSync.disableSync = () => alert('配置同步功能初始化失败');
   }
 }
 
