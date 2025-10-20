@@ -913,7 +913,7 @@ AdminPanel.prototype.createSyncTab = function() {
           <label for="github-new-username">添加新用户:</label>
           <div style="display: flex; gap: 10px; margin: 10px 0;">
             <input type="text" id="github-new-username" placeholder="输入GitHub用户名" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <button onclick="console.log('Button clicked'); if(window.githubUsersManager) { console.log('Manager exists'); window.githubUsersManager.addUser(); } else { console.log('Manager not found'); alert('GitHub用户管理器未初始化'); }" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">添加用户</button>
+            <button onclick="window.testAddUser()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">添加用户</button>
           </div>
         </div>
         

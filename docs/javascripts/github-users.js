@@ -376,3 +376,14 @@ window.githubUsersManager = new GitHubUsersManager();
 
 // 确保全局可用
 console.log('GitHubUsersManager initialized globally:', window.githubUsersManager);
+
+// 添加测试函数到全局作用域
+window.testAddUser = function() {
+  console.log('testAddUser called');
+  if (window.githubUsersManager) {
+    console.log('Manager exists, calling addUser');
+    window.githubUsersManager.addUser();
+  } else {
+    console.log('Manager not found');
+  }
+};
