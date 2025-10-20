@@ -151,12 +151,6 @@ class AdminPanel {
     return `
       <div class="admin-section">
         <h4>👥 用户权限管理</h4>
-        <div class="user-list">
-          <div class="user-item">
-            <span class="user-name">当前登录：${this.auth.user.login}</span>
-            <span class="user-role">管理员</span>
-          </div>
-        </div>
         <div class="add-user-section">
           <h5>添加授权用户</h5>
           <div class="input-group">
