@@ -16,24 +16,30 @@ class GitHubAuth {
 
   // 检查当前认证状态
   checkAuthStatus() {
+    console.log('Checking auth status...');
     const authData = localStorage.getItem(this.config.authStorageKey);
     if (authData) {
       try {
         const parsed = JSON.parse(authData);
+        console.log('Auth data found:', parsed);
         if (parsed.expiresAt && Date.now() < parsed.expiresAt) {
           this.user = parsed.user;
           this.isAuthenticated = true;
           this.isAdmin = this.config.adminUsers.includes(this.user.login);
+          console.log('User authenticated:', this.user.login, 'Admin:', this.isAdmin);
           this.showAuthenticatedUI();
           return;
         } else {
           // 认证已过期，清除数据
+          console.log('Auth expired, clearing data');
           localStorage.removeItem(this.config.authStorageKey);
         }
       } catch (e) {
         console.error('Auth data parse error:', e);
         localStorage.removeItem(this.config.authStorageKey);
       }
+    } else {
+      console.log('No auth data found');
     }
     
     this.showLoginUI();
@@ -47,9 +53,20 @@ class GitHubAuth {
 
   // 显示已认证界面
   showAuthenticatedUI() {
+    console.log('Showing authenticated UI');
     this.showContent();
     this.createUserInfo();
     this.hideLoginModal();
+    
+    // 如果是管理员，初始化管理面板
+    if (this.isAdmin && !window.adminPanel) {
+      console.log('Initializing admin panel');
+      setTimeout(() => {
+        if (window.AdminPanel) {
+          window.adminPanel = new window.AdminPanel(this);
+        }
+      }, 500);
+    }
   }
 
   // 创建登录模态框
@@ -287,16 +304,46 @@ class GitHubAuth {
       </div>
     `;
 
-    // 将用户信息添加到页面顶部
-    const container = document.querySelector('.container');
-    if (container) {
-      container.insertBefore(userInfo, container.firstChild);
+    // 尝试多个可能的选择器来找到合适的位置插入用户信息
+    let targetElement = null;
+    
+    // 尝试不同的选择器
+    const selectors = [
+      '.container',
+      '.md-container',
+      '.md-main__inner',
+      'main',
+      'body'
+    ];
+    
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element) {
+        targetElement = element;
+        break;
+      }
+    }
+    
+    if (targetElement) {
+      // 如果是body，添加到顶部
+      if (targetElement.tagName === 'BODY') {
+        targetElement.insertBefore(userInfo, targetElement.firstChild);
+      } else {
+        // 其他情况，尝试插入到第一个子元素之前
+        targetElement.insertBefore(userInfo, targetElement.firstChild);
+      }
+    } else {
+      // 如果找不到合适的容器，直接添加到body
+      document.body.insertBefore(userInfo, document.body.firstChild);
     }
 
     // 绑定退出按钮事件
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      this.logout();
-    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        this.logout();
+      });
+    }
   }
 
   // 退出登录
@@ -310,17 +357,39 @@ class GitHubAuth {
 
   // 隐藏内容
   hideContent() {
-    const container = document.querySelector('.container');
-    if (container) {
-      container.style.display = 'none';
+    // 尝试多个可能的选择器
+    const selectors = [
+      '.container',
+      '.md-container',
+      '.md-main__inner',
+      'main'
+    ];
+    
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'none';
+        break;
+      }
     }
   }
 
   // 显示内容
   showContent() {
-    const container = document.querySelector('.container');
-    if (container) {
-      container.style.display = '';
+    // 尝试多个可能的选择器
+    const selectors = [
+      '.container',
+      '.md-container',
+      '.md-main__inner',
+      'main'
+    ];
+    
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = '';
+        break;
+      }
     }
   }
 
@@ -626,6 +695,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 如果已存在，重新检查认证状态
     window.githubAuth.checkAuthStatus();
   }
+  
+  // 添加页面可见性变化时的认证检查
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && window.githubAuth) {
+      window.githubAuth.checkAuthStatus();
+    }
+  });
+  
+  // 添加页面焦点变化时的认证检查
+  window.addEventListener('focus', () => {
+    if (window.githubAuth) {
+      window.githubAuth.checkAuthStatus();
+    }
+  });
 });
 
 // 添加全局认证状态检查
