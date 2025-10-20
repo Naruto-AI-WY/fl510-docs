@@ -8,7 +8,28 @@ class AdminPanel {
 
   init() {
     if (this.auth.isAdmin) {
+      this.loadSavedConfig();
       this.createAdminButton();
+    }
+  }
+
+  // 加载保存的配置
+  loadSavedConfig() {
+    const savedConfig = localStorage.getItem('fl510_docs_config');
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        // 合并保存的配置到当前配置
+        if (parsedConfig.allowedUsers) {
+          window.AUTH_CONFIG.allowedUsers = parsedConfig.allowedUsers;
+        }
+        if (parsedConfig.adminUsers) {
+          window.AUTH_CONFIG.adminUsers = parsedConfig.adminUsers;
+        }
+        console.log('Loaded saved config:', parsedConfig);
+      } catch (error) {
+        console.error('Error loading saved config:', error);
+      }
     }
   }
 
@@ -41,6 +62,7 @@ class AdminPanel {
 
   // 显示管理面板
   showAdminPanel() {
+    this.loadSavedConfig(); // 确保显示前加载最新配置
     this.createAdminModal();
     this.isVisible = true;
   }
@@ -115,9 +137,10 @@ class AdminPanel {
             <input type="text" id="new-username" placeholder="GitHub用户名">
             <button onclick="window.adminPanel.addUser()">添加</button>
           </div>
+          <p class="help-text">💡 输入GitHub用户名，系统会自动验证用户是否存在</p>
         </div>
         <div class="authorized-users">
-          <h5>授权用户列表</h5>
+          <h5>授权用户列表 (${window.AUTH_CONFIG.allowedUsers.length} 个用户)</h5>
           <div id="authorized-users-list">
             ${this.getAuthorizedUsersList()}
           </div>
@@ -211,6 +234,12 @@ class AdminPanel {
   // 获取授权用户列表
   getAuthorizedUsersList() {
     const users = window.AUTH_CONFIG.allowedUsers || [];
+    console.log('Getting authorized users list:', users);
+    
+    if (users.length === 0) {
+      return '<div class="user-item"><span class="user-name">暂无授权用户</span></div>';
+    }
+    
     return users.map(user => `
       <div class="user-item">
         <span class="user-name">${user}</span>
@@ -227,16 +256,39 @@ class AdminPanel {
       return;
     }
 
+    // 检查用户是否已存在
     if (window.AUTH_CONFIG.allowedUsers.includes(username)) {
       alert('用户已在授权列表中');
       return;
     }
 
-    window.AUTH_CONFIG.allowedUsers.push(username);
-    this.updateConfig();
-    this.refreshUsersList();
-    document.getElementById('new-username').value = '';
-    alert('用户已添加');
+    // 验证GitHub用户名是否存在
+    this.validateGitHubUser(username).then(isValid => {
+      if (isValid) {
+        // 添加用户到配置
+        window.AUTH_CONFIG.allowedUsers.push(username);
+        this.updateConfig();
+        this.refreshUsersList();
+        document.getElementById('new-username').value = '';
+        alert(`用户 ${username} 已成功添加`);
+      } else {
+        alert(`GitHub用户名 ${username} 不存在，请检查输入`);
+      }
+    }).catch(error => {
+      console.error('User validation error:', error);
+      alert('验证用户时出错，请重试');
+    });
+  }
+
+  // 验证GitHub用户是否存在
+  async validateGitHubUser(username) {
+    try {
+      const response = await fetch(`https://api.github.com/users/${username}`);
+      return response.ok;
+    } catch (error) {
+      console.error('GitHub API error:', error);
+      return false;
+    }
   }
 
   // 移除用户
@@ -261,14 +313,30 @@ class AdminPanel {
   refreshUsersList() {
     const list = document.getElementById('authorized-users-list');
     if (list) {
-      list.innerHTML = this.getAuthorizedUsersList();
+      const newContent = this.getAuthorizedUsersList();
+      console.log('Refreshing users list with content:', newContent);
+      list.innerHTML = newContent;
+    } else {
+      console.error('Authorized users list element not found');
     }
   }
 
   // 更新配置
   updateConfig() {
-    // 这里应该将配置保存到服务器或本地存储
+    // 保存配置到本地存储
     localStorage.setItem('fl510_docs_config', JSON.stringify(window.AUTH_CONFIG));
+    
+    // 通知认证系统配置已更新
+    if (window.githubAuth) {
+      // 重新加载配置
+      window.githubAuth.config = window.AUTH_CONFIG;
+      console.log('Configuration updated:', window.AUTH_CONFIG);
+    }
+    
+    // 触发自定义事件通知其他组件
+    window.dispatchEvent(new CustomEvent('configUpdated', {
+      detail: { config: window.AUTH_CONFIG }
+    }));
   }
 
   // 刷新内容
@@ -571,6 +639,18 @@ class AdminPanel {
         border-radius: 6px;
         cursor: pointer;
         font-size: 14px;
+        transition: background 0.2s;
+      }
+
+      .input-group button:hover {
+        background: #218838;
+      }
+
+      .help-text {
+        font-size: 12px;
+        color: #586069;
+        margin: 8px 0 0 0;
+        font-style: italic;
       }
 
       .content-actions {
