@@ -432,7 +432,9 @@ class GitHubAuth {
     }
 
     // 强制应用所有样式，确保一致性
-    this.applyConsistentStyles();
+    if (this.applyConsistentStyles) {
+      this.applyConsistentStyles();
+    }
 
     // 触发用户信息创建完成事件
     window.dispatchEvent(new CustomEvent('userInfoCreated', {
@@ -520,7 +522,9 @@ class GitHubAuth {
               computedStyle.top !== '0px' || 
               computedStyle.right !== '0px') {
             console.log('User info styles overridden, reapplying...');
-            this.applyConsistentStyles();
+            if (this.applyConsistentStyles) {
+              this.applyConsistentStyles();
+            }
           }
         }
       }
@@ -958,8 +962,8 @@ window.addEventListener('load', () => {
   }
 });
 
-  // 应用一致的样式
-  applyConsistentStyles() {
+// 应用一致的样式
+GitHubAuth.prototype.applyConsistentStyles = function() {
     const userInfo = document.getElementById('user-info');
     if (userInfo) {
       // 应用所有样式，确保在所有页面上都一致
@@ -1042,7 +1046,9 @@ window.addEventListener('load', () => {
   // 添加强制重新定位方法
 GitHubAuth.prototype.forceRepositionUserInfo = function() {
   // 直接调用样式应用方法
-  this.applyConsistentStyles();
+  if (this.applyConsistentStyles) {
+    this.applyConsistentStyles();
+  }
   console.log('Force repositioned user info to top-right');
 };
 
