@@ -80,7 +80,7 @@ class GitHubUsersManager {
     try {
       console.log('Syncing users from GitHub...');
       
-      // 优先尝试从GitHub Gist获取配置
+      // 首先尝试从GitHub Gist获取配置
       const gistConfig = await this.getConfigFromGist();
       if (gistConfig) {
         console.log('Using Gist config:', gistConfig);
@@ -88,6 +88,21 @@ class GitHubUsersManager {
         // 同时保存到本地存储，确保下次加载更快
         localStorage.setItem('fl510_docs_config', JSON.stringify(gistConfig));
         return true;
+      }
+      
+      // 如果Gist没有配置，尝试从GitHub仓库获取共享的Gist ID
+      const sharedGistId = await this.getSharedGistId();
+      if (sharedGistId) {
+        console.log('Found shared Gist ID:', sharedGistId);
+        localStorage.setItem('fl510_gist_id', sharedGistId);
+        // 再次尝试从Gist获取配置
+        const gistConfig2 = await this.getConfigFromGist();
+        if (gistConfig2) {
+          console.log('Using shared Gist config:', gistConfig2);
+          this.applyConfig(gistConfig2);
+          localStorage.setItem('fl510_docs_config', JSON.stringify(gistConfig2));
+          return true;
+        }
       }
       
       // 如果Gist没有配置，检查本地配置
@@ -189,6 +204,10 @@ class GitHubUsersManager {
         const gist = await response.json();
         localStorage.setItem('fl510_gist_id', gist.id);
         console.log('Config saved to Gist:', gist.id);
+        
+        // 保存共享的Gist ID到GitHub仓库
+        await this.saveSharedGistId(gist.id);
+        
         return true;
       } else {
         console.error('Failed to save to Gist:', response.statusText);
@@ -200,11 +219,84 @@ class GitHubUsersManager {
     }
   }
 
+  // 获取共享的Gist ID
+  async getSharedGistId() {
+    try {
+      // 从GitHub仓库获取共享的Gist ID
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        const gistId = atob(data.content).trim();
+        console.log('Retrieved shared Gist ID:', gistId);
+        return gistId;
+      } else if (response.status === 404) {
+        console.log('No shared Gist ID found');
+        return null;
+      } else {
+        throw new Error(`GitHub API error: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Failed to get shared Gist ID:', error);
+      return null;
+    }
+  }
+
+  // 保存共享的Gist ID到GitHub仓库
+  async saveSharedGistId(gistId) {
+    try {
+      const githubToken = localStorage.getItem('github_sync_token');
+      if (!githubToken) {
+        console.log('No GitHub token, cannot save shared Gist ID');
+        return false;
+      }
+
+      const content = btoa(gistId); // 编码为base64
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${githubToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Update shared Gist ID',
+          content: content,
+          sha: await this.getFileSha('gist-id.txt')
+        })
+      });
+
+      if (response.ok) {
+        console.log('Shared Gist ID saved successfully');
+        return true;
+      } else {
+        console.error('Failed to save shared Gist ID:', response.statusText);
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to save shared Gist ID:', error);
+      return false;
+    }
+  }
+
+  // 获取文件的SHA（用于更新文件）
+  async getFileSha(filename) {
+    try {
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${filename}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.sha;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
   // 从GitHub获取配置（保留原方法作为备用）
   async getConfigFromGitHub() {
     try {
       // 使用GitHub API获取文件内容
-      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`);
+      const response = await fetch(`https://api.github.com/repos/${this.repoName}/contents/${this.configFile}`);
       
       if (response.ok) {
         const data = await response.json();
