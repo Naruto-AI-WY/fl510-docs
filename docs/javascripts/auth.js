@@ -79,12 +79,33 @@ class GitHubAuth {
   }
 
   // 加载保存的配置
-  loadSavedConfig() {
-    const savedConfig = localStorage.getItem('fl510_docs_config');
-    if (savedConfig) {
-      try {
+  async loadSavedConfig() {
+    try {
+      // 首先尝试从云端加载配置
+      if (window.configSync && window.configSync.githubToken) {
+        const cloudConfig = await window.configSync.loadConfig();
+        if (cloudConfig) {
+          console.log('Loaded config from cloud:', cloudConfig);
+          // 合并云端配置
+          if (cloudConfig.allowedUsers) {
+            this.config.allowedUsers = cloudConfig.allowedUsers;
+            console.log('Updated allowed users from cloud:', this.config.allowedUsers);
+          }
+          if (cloudConfig.adminUsers) {
+            this.config.adminUsers = cloudConfig.adminUsers;
+            console.log('Updated admin users from cloud:', this.config.adminUsers);
+          }
+          // 更新全局配置
+          window.AUTH_CONFIG = this.config;
+          return;
+        }
+      }
+      
+      // 如果云端加载失败，从本地存储加载
+      const savedConfig = localStorage.getItem('fl510_docs_config');
+      if (savedConfig) {
         const parsedConfig = JSON.parse(savedConfig);
-        console.log('Loading saved config:', parsedConfig);
+        console.log('Loading saved config from localStorage:', parsedConfig);
         
         // 合并保存的配置到当前配置
         if (parsedConfig.allowedUsers) {

@@ -39,6 +39,7 @@ extra_javascript:
   - javascripts/auth-config.js
   - javascripts/auth.js
   - javascripts/admin.js
+  - javascripts/config-sync.js
 nav:
   - 认证测试: test-auth.html
   - 认证调试: debug-auth.html

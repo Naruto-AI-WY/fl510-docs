@@ -112,6 +112,7 @@ class AdminPanel {
               <button class="tab-btn active" data-tab="users">用户管理</button>
               <button class="tab-btn" data-tab="content">内容管理</button>
               <button class="tab-btn" data-tab="settings">系统设置</button>
+              <button class="tab-btn" data-tab="sync">配置同步</button>
             </div>
             <div class="admin-content">
               <div id="users-tab" class="tab-content active">
@@ -122,6 +123,9 @@ class AdminPanel {
               </div>
               <div id="settings-tab" class="tab-content">
                 ${this.createSettingsTab()}
+              </div>
+              <div id="sync-tab" class="tab-content">
+                ${this.createSyncTab()}
               </div>
             </div>
           </div>
@@ -351,6 +355,11 @@ class AdminPanel {
     window.dispatchEvent(new CustomEvent('configUpdated', {
       detail: { config: window.AUTH_CONFIG }
     }));
+    
+    // 如果启用了配置同步，同步到云端
+    if (window.configSync && window.configSync.githubToken) {
+      window.configSync.syncConfig();
+    }
   }
 
   // 刷新内容
@@ -823,3 +832,54 @@ window.addEventListener('userInfoCreated', () => {
     }
   }
 });
+
+// 添加配置同步标签页方法
+AdminPanel.prototype.createSyncTab = function() {
+  const isSyncEnabled = window.configSync && window.configSync.githubToken;
+  
+  return `
+    <div class="admin-section">
+      <h4>🔗 跨浏览器配置同步</h4>
+      <div class="sync-status">
+        <p><strong>当前状态：</strong> ${isSyncEnabled ? '✅ 已启用同步' : '❌ 未启用同步'}</p>
+      </div>
+      
+      ${!isSyncEnabled ? `
+        <div class="sync-setup">
+          <h5>设置GitHub同步</h5>
+          <p>为了在不同浏览器间同步用户配置，需要设置GitHub Personal Access Token：</p>
+          <ol>
+            <li>访问 <a href="https://github.com/settings/tokens" target="_blank">GitHub Token设置</a></li>
+            <li>点击 "Generate new token" → "Generate new token (classic)"</li>
+            <li>选择 "gist" 权限</li>
+            <li>复制生成的token</li>
+            <li>在下方输入框中粘贴token</li>
+          </ol>
+          <div class="token-input">
+            <input type="password" id="github-token-input" placeholder="输入GitHub Personal Access Token">
+            <button onclick="window.configSync.setupSync()">启用同步</button>
+          </div>
+        </div>
+      ` : `
+        <div class="sync-actions">
+          <h5>同步操作</h5>
+          <div class="sync-buttons">
+            <button onclick="window.configSync.syncConfig()" class="sync-btn">🔄 立即同步</button>
+            <button onclick="window.configSync.loadConfig()" class="sync-btn">📥 从云端加载</button>
+            <button onclick="window.configSync.disableSync()" class="sync-btn danger">❌ 禁用同步</button>
+          </div>
+        </div>
+      `}
+      
+      <div class="sync-info">
+        <h5>同步说明</h5>
+        <ul>
+          <li>✅ 配置会自动保存到您的GitHub Gist中</li>
+          <li>✅ 在任何浏览器登录后都能访问相同的用户配置</li>
+          <li>✅ 配置是私有的，只有您能访问</li>
+          <li>⚠️ 需要GitHub账号和Personal Access Token</li>
+        </ul>
+      </div>
+    </div>
+  `;
+};
