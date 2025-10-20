@@ -219,8 +219,21 @@ class GitHubUsersManager {
         return null;
       }
 
-      // 尝试访问公开的Gist（不需要Token）
-      const response = await fetch(`https://api.github.com/gists/${gistId}`);
+      // 获取Token
+      const token = localStorage.getItem('github_sync_token');
+      const headers = {
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      
+      // 如果有Token，添加到请求头
+      if (token) {
+        headers['Authorization'] = `token ${token}`;
+      }
+
+      // 尝试访问Gist
+      const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+        headers: headers
+      });
       if (response.ok) {
         const gist = await response.json();
         const configFile = gist.files['fl510-users-config.json'];
@@ -310,8 +323,21 @@ class GitHubUsersManager {
   // 获取共享的Gist ID
   async getSharedGistId() {
     try {
+      // 获取Token
+      const token = localStorage.getItem('github_sync_token');
+      const headers = {
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      
+      // 如果有Token，添加到请求头
+      if (token) {
+        headers['Authorization'] = `token ${token}`;
+      }
+      
       // 从GitHub仓库获取共享的Gist ID
-      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`);
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`, {
+        headers: headers
+      });
       
       if (response.ok) {
         const data = await response.json();
@@ -475,8 +501,21 @@ class GitHubUsersManager {
   // 从GitHub获取配置（保留原方法作为备用）
   async getConfigFromGitHub() {
     try {
+      // 获取Token
+      const token = localStorage.getItem('github_sync_token');
+      const headers = {
+        'Accept': 'application/vnd.github.v3+json'
+      };
+      
+      // 如果有Token，添加到请求头
+      if (token) {
+        headers['Authorization'] = `token ${token}`;
+      }
+      
       // 使用GitHub API获取文件内容
-      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`);
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
+        headers: headers
+      });
       
       if (response.ok) {
         const data = await response.json();
