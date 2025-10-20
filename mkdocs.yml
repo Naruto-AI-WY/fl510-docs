@@ -1,5 +1,6 @@
 site_name: FL-510 软件文档
 use_directory_urls: true
+site_url: https://naruto-ai-wy.github.io/fl510-docs/
 theme:
   name: material
   language: zh
