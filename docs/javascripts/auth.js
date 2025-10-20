@@ -782,7 +782,7 @@ class GitHubAuth {
       this.checkAuthStatus();
     }, this.config.authCheckInterval);
     
-    // 定期检查用户信息位置和样式
+    // 定期检查用户信息位置和样式（减少频率避免无限循环）
     setInterval(() => {
       if (this.isAuthenticated) {
         const userInfo = document.getElementById('user-info');
@@ -790,16 +790,16 @@ class GitHubAuth {
           const rect = userInfo.getBoundingClientRect();
           const computedStyle = window.getComputedStyle(userInfo);
           
-          // 检查位置
+          // 检查位置（修复逻辑错误）
           if (rect.top > 50 || rect.left < window.innerWidth - 200) {
             console.log('User info not in correct position, repositioning...');
             this.forceRepositionUserInfo();
           }
           
-          // 检查样式是否被覆盖
+          // 检查样式是否被覆盖（修复检查条件）
           if (computedStyle.position !== 'fixed' || 
-              computedStyle.top !== '0px' || 
-              computedStyle.right !== '0px') {
+              (computedStyle.top !== '20px' && computedStyle.top !== '0px') || 
+              (computedStyle.right !== '20px' && computedStyle.right !== '0px')) {
             console.log('User info styles overridden, reapplying...');
             if (this.applyConsistentStyles) {
               this.applyConsistentStyles();
@@ -819,7 +819,7 @@ class GitHubAuth {
           }
         }
       }
-    }, 1000); // 每1秒检查一次
+    }, 5000); // 每5秒检查一次，避免无限循环
   }
 
   // 添加认证相关样式

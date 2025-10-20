@@ -137,6 +137,9 @@ class GitHubUsersManager {
         // 更新本地配置
         this.applyConfig(currentConfig);
         
+        // 保存到本地存储
+        localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
+        
         console.log(`User ${username} added to config`);
         return true;
       }
