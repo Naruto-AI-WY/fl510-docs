@@ -281,23 +281,37 @@ class AdminPanel {
       return;
     }
 
-    // 检查用户是否已存在
     if (window.AUTH_CONFIG.allowedUsers.includes(username)) {
       alert('用户已在授权列表中');
       return;
     }
 
-    // 验证GitHub用户名是否存在
-    this.validateGitHubUser(username).then(isValid => {
-      if (isValid) {
-        // 添加用户到配置
+    this.validateGitHubUser(username).then(async isValid => {
+      if (!isValid) {
+        alert(`GitHub用户名 ${username} 不存在，请检查输入`);
+        return;
+      }
+
+      // 优先通过 githubUsersManager 统一持久化与广播
+      if (window.githubUsersManager && window.githubUsersManager.addUserToGitHub) {
+        const ok = await window.githubUsersManager.addUserToGitHub(username);
+        if (ok) {
+          // 本地UI刷新
+          this.refreshUsersList();
+          const input = document.getElementById('new-username');
+          if (input) input.value = '';
+          alert(`用户 ${username} 已成功添加并已同步`);
+        } else {
+          alert(`添加用户 ${username} 失败，请检查Token和网络`);
+        }
+      } else {
+        // 兜底：仅本地更新
         window.AUTH_CONFIG.allowedUsers.push(username);
         this.updateConfig();
         this.refreshUsersList();
-        document.getElementById('new-username').value = '';
-        alert(`用户 ${username} 已成功添加`);
-      } else {
-        alert(`GitHub用户名 ${username} 不存在，请检查输入`);
+        const input = document.getElementById('new-username');
+        if (input) input.value = '';
+        alert(`用户 ${username} 已添加（本地），同步模块未初始化`);
       }
     }).catch(error => {
       console.error('User validation error:', error);
@@ -323,13 +337,29 @@ class AdminPanel {
       return;
     }
 
-    if (confirm(`确定要移除用户 ${username} 的访问权限吗？`)) {
+    if (!confirm(`确定要移除用户 ${username} 的访问权限吗？`)) return;
+
+    // 优先通过 githubUsersManager 移除并同步
+    if (window.githubUsersManager && window.githubUsersManager.removeUserFromGitHub) {
+      window.githubUsersManager.removeUserFromGitHub(username).then(ok => {
+        if (ok) {
+          this.refreshUsersList();
+          alert('用户已移除并已同步');
+        } else {
+          alert('移除失败，请检查Token和网络');
+        }
+      }).catch(err => {
+        console.error('Remove user error:', err);
+        alert('移除失败，请稍后重试');
+      });
+    } else {
+      // 兜底：仅本地更新
       const index = window.AUTH_CONFIG.allowedUsers.indexOf(username);
       if (index > -1) {
         window.AUTH_CONFIG.allowedUsers.splice(index, 1);
         this.updateConfig();
         this.refreshUsersList();
-        alert('用户已移除');
+        alert('用户已移除（本地），同步模块未初始化');
       }
     }
   }
