@@ -9,7 +9,6 @@ class AdminPanel {
   init() {
     if (this.auth.isAdmin) {
       this.createAdminButton();
-      this.setupAdminPanel();
     }
   }
 
@@ -708,7 +707,7 @@ class AdminPanel {
 document.addEventListener('DOMContentLoaded', () => {
   // 等待认证系统初始化
   setTimeout(() => {
-    if (window.githubAuth && window.githubAuth.isAdmin) {
+    if (window.githubAuth && window.githubAuth.isAuthenticated && window.githubAuth.isAdmin) {
       window.adminPanel = new AdminPanel(window.githubAuth);
     }
   }, 1000);
