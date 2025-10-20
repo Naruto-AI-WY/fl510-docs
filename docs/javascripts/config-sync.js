@@ -89,6 +89,62 @@ class ConfigSync {
       return Promise.resolve();
     } catch (error) {
       console.error('Failed to sync config:', error);
+      if (this.isSafari) {
+        console.log('Safari sync error, attempting fallback');
+        // Safari特殊处理
+        return this.safariSyncFallback(configData);
+      }
+      return Promise.reject(error);
+    }
+  }
+
+  // Safari同步备用方法
+  async safariSyncFallback(configData) {
+    try {
+      // 使用XMLHttpRequest进行同步
+      const gistData = {
+        description: 'FL-510 Docs User Configuration',
+        public: false,
+        files: {
+          'fl510-users-config.json': {
+            content: JSON.stringify(configData, null, 2)
+          }
+        }
+      };
+
+      if (this.gistId) {
+        // 更新现有Gist
+        return this.safariXMLHttpRequest(`https://api.github.com/gists/${this.gistId}`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `token ${this.githubToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify(gistData)
+        });
+      } else {
+        // 创建新Gist
+        const response = await this.safariXMLHttpRequest('https://api.github.com/gists', {
+          method: 'POST',
+          headers: {
+            'Authorization': `token ${this.githubToken}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify(gistData)
+        });
+        
+        if (response && response.ok) {
+          const gist = await response.json();
+          this.gistId = gist.id;
+          localStorage.setItem('fl510_gist_id', this.gistId);
+        }
+        
+        return response;
+      }
+    } catch (error) {
+      console.error('Safari sync fallback failed:', error);
       return Promise.reject(error);
     }
   }
@@ -259,16 +315,21 @@ class ConfigSync {
     this.githubToken = token;
     localStorage.setItem('github_sync_token', token);
     
-    // 测试token是否有效
+    // Safari兼容的fetch请求
     try {
-      const response = await fetch('https://api.github.com/user', {
+      const requestOptions = {
+        method: 'GET',
         headers: {
           'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
         }
-      });
+      };
       
-      if (response.ok) {
+      // Safari兼容的fetch调用
+      const response = await this.safariCompatibleFetch('https://api.github.com/user', requestOptions);
+      
+      if (response && response.ok) {
         alert('GitHub同步设置成功！');
         this.setupPeriodicSync();
         const modal = document.getElementById('sync-settings-modal');
@@ -277,14 +338,91 @@ class ConfigSync {
         }
         return Promise.resolve();
       } else {
-        throw new Error('Invalid token');
+        throw new Error('Invalid token or network error');
       }
     } catch (error) {
-      alert('Token无效，请检查是否正确');
+      console.error('Safari setupSync error:', error);
+      alert('Safari浏览器Token验证失败，请检查网络连接和Token是否正确');
       this.githubToken = null;
       localStorage.removeItem('github_sync_token');
       return Promise.reject(error);
     }
+  }
+
+  // Safari兼容的fetch方法
+  async safariCompatibleFetch(url, options) {
+    if (typeof fetch !== 'undefined') {
+      try {
+        return await fetch(url, options);
+      } catch (error) {
+        console.error('Safari fetch error:', error);
+        // 如果fetch失败，尝试XMLHttpRequest
+        return this.safariXMLHttpRequest(url, options);
+      }
+    } else {
+      // 使用XMLHttpRequest作为备用
+      return this.safariXMLHttpRequest(url, options);
+    }
+  }
+
+  // Safari XMLHttpRequest备用方法
+  safariXMLHttpRequest(url, options) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(options.method || 'GET', url, true);
+      
+      // 设置请求头
+      if (options.headers) {
+        Object.keys(options.headers).forEach(key => {
+          xhr.setRequestHeader(key, options.headers[key]);
+        });
+      }
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve({
+              ok: true,
+              status: xhr.status,
+              json: () => {
+                try {
+                  return Promise.resolve(JSON.parse(xhr.responseText));
+                } catch (error) {
+                  console.error('Safari JSON parse error:', error);
+                  return Promise.resolve(null);
+                }
+              }
+            });
+          } else {
+            resolve({
+              ok: false,
+              status: xhr.status,
+              json: () => Promise.resolve(null)
+            });
+          }
+        }
+      };
+      
+      xhr.onerror = function() {
+        console.error('Safari XMLHttpRequest error');
+        reject(new Error('Safari XMLHttpRequest failed'));
+      };
+      
+      xhr.ontimeout = function() {
+        console.error('Safari XMLHttpRequest timeout');
+        reject(new Error('Safari XMLHttpRequest timeout'));
+      };
+      
+      // 设置超时
+      xhr.timeout = 10000; // 10秒超时
+      
+      // 发送请求体（如果有）
+      if (options.body) {
+        xhr.send(options.body);
+      } else {
+        xhr.send();
+      }
+    });
   }
 
   // 禁用同步
@@ -457,39 +595,106 @@ window.addEventListener('error', function(event) {
   event.preventDefault();
 });
 
+// Safari兼容性检测
+function isSafari() {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
+// 创建Safari兼容的Promise
+function createSafariCompatiblePromise(executor) {
+  if (typeof Promise !== 'undefined') {
+    return new Promise(executor);
+  } else {
+    // Safari旧版本兼容
+    return {
+      then: function(onResolve, onReject) {
+        try {
+          executor(onResolve, onReject);
+        } catch (error) {
+          if (onReject) onReject(error);
+        }
+        return this;
+      },
+      catch: function(onReject) {
+        return this.then(null, onReject);
+      }
+    };
+  }
+}
+
 // 立即创建占位符对象，防止未定义错误
 window.configSync = {
   initialized: false,
+  isSafari: isSafari(),
   setupSync: function() {
-    console.log('ConfigSync setupSync called, initialized:', this.initialized);
+    console.log('ConfigSync setupSync called, initialized:', this.initialized, 'Safari:', this.isSafari);
     if (this.initialized && this._realSetupSync) {
-      return this._realSetupSync();
+      try {
+        return this._realSetupSync();
+      } catch (error) {
+        console.error('Safari setupSync error:', error);
+        alert('Safari浏览器配置同步出错，请尝试刷新页面');
+        return null;
+      }
     } else {
-      alert('配置同步功能正在初始化中，请稍后再试');
+      if (this.isSafari) {
+        alert('Safari浏览器正在初始化配置同步功能，请稍后再试');
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
     }
   },
   syncConfig: function() {
-    console.log('ConfigSync syncConfig called, initialized:', this.initialized);
+    console.log('ConfigSync syncConfig called, initialized:', this.initialized, 'Safari:', this.isSafari);
     if (this.initialized && this._realSyncConfig) {
-      return this._realSyncConfig();
+      try {
+        return this._realSyncConfig();
+      } catch (error) {
+        console.error('Safari syncConfig error:', error);
+        alert('Safari浏览器同步配置出错，请尝试刷新页面');
+        return null;
+      }
     } else {
-      alert('配置同步功能正在初始化中，请稍后再试');
+      if (this.isSafari) {
+        alert('Safari浏览器正在初始化配置同步功能，请稍后再试');
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
     }
   },
   loadConfig: function() {
-    console.log('ConfigSync loadConfig called, initialized:', this.initialized);
+    console.log('ConfigSync loadConfig called, initialized:', this.initialized, 'Safari:', this.isSafari);
     if (this.initialized && this._realLoadConfig) {
-      return this._realLoadConfig();
+      try {
+        return this._realLoadConfig();
+      } catch (error) {
+        console.error('Safari loadConfig error:', error);
+        return createSafariCompatiblePromise(function(resolve) {
+          resolve(null);
+        });
+      }
     } else {
-      return Promise.resolve(null);
+      return createSafariCompatiblePromise(function(resolve) {
+        resolve(null);
+      });
     }
   },
   disableSync: function() {
-    console.log('ConfigSync disableSync called, initialized:', this.initialized);
+    console.log('ConfigSync disableSync called, initialized:', this.initialized, 'Safari:', this.isSafari);
     if (this.initialized && this._realDisableSync) {
-      return this._realDisableSync();
+      try {
+        return this._realDisableSync();
+      } catch (error) {
+        console.error('Safari disableSync error:', error);
+        alert('Safari浏览器禁用同步出错，请尝试刷新页面');
+        return null;
+      }
     } else {
-      alert('配置同步功能正在初始化中，请稍后再试');
+      if (this.isSafari) {
+        alert('Safari浏览器正在初始化配置同步功能，请稍后再试');
+      } else {
+        alert('配置同步功能正在初始化中，请稍后再试');
+      }
     }
   }
 };
