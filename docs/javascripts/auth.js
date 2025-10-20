@@ -26,9 +26,13 @@ class GitHubAuth {
           this.isAdmin = this.config.adminUsers.includes(this.user.login);
           this.showAuthenticatedUI();
           return;
+        } else {
+          // 认证已过期，清除数据
+          localStorage.removeItem(this.config.authStorageKey);
         }
       } catch (e) {
         console.error('Auth data parse error:', e);
+        localStorage.removeItem(this.config.authStorageKey);
       }
     }
     
@@ -179,8 +183,12 @@ class GitHubAuth {
       const response = await fetch(`https://api.github.com/users/${username}`);
       if (response.ok) {
         const user = await response.json();
+        console.log('GitHub API response:', user);
+        console.log('Allowed users:', this.config.allowedUsers);
+        console.log('User login:', user.login);
         this.handleSuccessfulAuth(user);
       } else {
+        console.error('GitHub API error:', response.status, response.statusText);
         this.showAuthError('用户名不存在，请检查输入');
       }
     } catch (error) {
@@ -611,5 +619,27 @@ class GitHubAuth {
 
 // 初始化认证系统
 document.addEventListener('DOMContentLoaded', () => {
-  window.githubAuth = new GitHubAuth();
+  // 检查是否已经存在认证实例
+  if (!window.githubAuth) {
+    window.githubAuth = new GitHubAuth();
+  } else {
+    // 如果已存在，重新检查认证状态
+    window.githubAuth.checkAuthStatus();
+  }
 });
+
+// 添加全局认证状态检查
+window.checkAuthStatus = function() {
+  if (window.githubAuth) {
+    return window.githubAuth.isAuthenticated;
+  }
+  return false;
+};
+
+// 添加全局用户信息获取
+window.getCurrentUser = function() {
+  if (window.githubAuth && window.githubAuth.isAuthenticated) {
+    return window.githubAuth.user;
+  }
+  return null;
+};
