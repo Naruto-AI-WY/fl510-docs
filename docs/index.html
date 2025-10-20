@@ -543,10 +543,176 @@ if(__origSearch) {
 document.addEventListener('DOMContentLoaded', ensureServiceLinks);
 </script>
 
+<!-- 配置同步调试功能 -->
+<script>
+// 调试功能
+function debugBasics() {
+  let result = '基础检查结果：<br>';
+  
+  result += `window.AUTH_CONFIG: ${!!window.AUTH_CONFIG}<br>`;
+  result += `window.configSync: ${!!window.configSync}<br>`;
+  result += `configSync.initialized: ${window.configSync?.initialized}<br>`;
+  result += `localStorage配置: ${!!localStorage.getItem('fl510_docs_config')}<br>`;
+  result += `GitHub Token: ${!!localStorage.getItem('github_sync_token')}<br>`;
+  result += `Gist ID: ${!!localStorage.getItem('fl510_gist_id')}<br>`;
+  
+  document.getElementById('debug-basics-result').innerHTML = `<div class="debug-status">${result}</div>`;
+}
+
+async function debugTestToken() {
+  const token = document.getElementById('debug-token').value.trim();
+  if (!token) {
+    document.getElementById('debug-token-result').innerHTML = '<div class="debug-error">请输入Token</div>';
+    return;
+  }
+
+  document.getElementById('debug-token-result').innerHTML = '<div class="debug-info">正在测试Token...</div>';
+
+  try {
+    const response = await fetch('https://api.github.com/user', {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+
+    if (response.ok) {
+      const user = await response.json();
+      document.getElementById('debug-token-result').innerHTML = `<div class="debug-success">✅ Token有效！用户: ${user.login}</div>`;
+      
+      // 保存Token
+      localStorage.setItem('github_sync_token', token);
+      if (window.configSync) {
+        window.configSync.githubToken = token;
+      }
+    } else {
+      document.getElementById('debug-token-result').innerHTML = `<div class="debug-error">❌ Token无效，状态码: ${response.status}</div>`;
+    }
+  } catch (error) {
+    document.getElementById('debug-token-result').innerHTML = `<div class="debug-error">❌ 网络错误: ${error.message}</div>`;
+  }
+}
+
+async function debugTestSync() {
+  document.getElementById('debug-sync-result').innerHTML = '<div class="debug-info">正在测试同步...</div>';
+  
+  try {
+    if (window.configSync && window.configSync.syncConfig) {
+      await window.configSync.syncConfig();
+      document.getElementById('debug-sync-result').innerHTML = '<div class="debug-success">✅ 同步测试完成</div>';
+    } else {
+      document.getElementById('debug-sync-result').innerHTML = '<div class="debug-error">❌ configSync不可用</div>';
+    }
+  } catch (error) {
+    document.getElementById('debug-sync-result').innerHTML = `<div class="debug-error">❌ 同步失败: ${error.message}</div>`;
+  }
+}
+
+async function debugTestLoad() {
+  document.getElementById('debug-sync-result').innerHTML = '<div class="debug-info">正在测试加载...</div>';
+  
+  try {
+    if (window.configSync && window.configSync.loadConfig) {
+      const config = await window.configSync.loadConfig();
+      if (config) {
+        document.getElementById('debug-sync-result').innerHTML = `<div class="debug-success">✅ 加载成功: ${JSON.stringify(config)}</div>`;
+      } else {
+        document.getElementById('debug-sync-result').innerHTML = '<div class="debug-info">⚠️ 没有云端配置</div>';
+      }
+    } else {
+      document.getElementById('debug-sync-result').innerHTML = '<div class="debug-error">❌ configSync不可用</div>';
+    }
+  } catch (error) {
+    document.getElementById('debug-sync-result').innerHTML = `<div class="debug-error">❌ 加载失败: ${error.message}</div>`;
+  }
+}
+
+function debugAddUser() {
+  try {
+    let config = JSON.parse(localStorage.getItem('fl510_docs_config') || '{}');
+    if (!config.allowedUsers) config.allowedUsers = [];
+    if (!config.adminUsers) config.adminUsers = [];
+
+    const testUser = 'test-user-' + Date.now();
+    config.allowedUsers.push(testUser);
+    
+    localStorage.setItem('fl510_docs_config', JSON.stringify(config));
+    
+    if (window.AUTH_CONFIG) {
+      window.AUTH_CONFIG.allowedUsers = config.allowedUsers;
+    }
+
+    document.getElementById('debug-config-result').innerHTML = `<div class="debug-success">✅ 添加测试用户: ${testUser}</div>`;
+  } catch (error) {
+    document.getElementById('debug-config-result').innerHTML = `<div class="debug-error">❌ 添加用户失败: ${error.message}</div>`;
+  }
+}
+
+function debugShowConfig() {
+  try {
+    const config = JSON.parse(localStorage.getItem('fl510_docs_config') || '{}');
+    document.getElementById('debug-config-result').innerHTML = `<div class="debug-info"><pre>${JSON.stringify(config, null, 2)}</pre></div>`;
+  } catch (error) {
+    document.getElementById('debug-config-result').innerHTML = `<div class="debug-error">❌ 显示配置失败: ${error.message}</div>`;
+  }
+}
+
+function debugShowInfo() {
+  let debug = '调试信息：<br><pre>';
+  
+  debug += `window.configSync: ${JSON.stringify(window.configSync, null, 2)}\n\n`;
+  debug += `localStorage keys: ${Object.keys(localStorage).join(', ')}\n\n`;
+  debug += `AUTH_CONFIG: ${JSON.stringify(window.AUTH_CONFIG, null, 2)}\n\n`;
+  
+  if (window.configSync) {
+    debug += `setupSync: ${typeof window.configSync.setupSync}\n`;
+    debug += `syncConfig: ${typeof window.configSync.syncConfig}\n`;
+    debug += `loadConfig: ${typeof window.configSync.loadConfig}\n`;
+    debug += `disableSync: ${typeof window.configSync.disableSync}\n`;
+  }
+  
+  debug += '</pre>';
+  document.getElementById('debug-info-result').innerHTML = `<div class="debug-info">${debug}</div>`;
+}
+
+// 添加调试按钮到导航
+function addDebugButton() {
+  const nav = document.querySelector('.nav');
+  if (nav && !document.getElementById('debug-btn')) {
+    const debugBtn = document.createElement('button');
+    debugBtn.id = 'debug-btn';
+    debugBtn.textContent = '🔧 调试';
+    debugBtn.style.cssText = 'position: fixed; top: 10px; right: 10px; z-index: 1000; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;';
+    debugBtn.onclick = () => {
+      const debugLayer = document.querySelector('[data-layer="debug"]');
+      if (debugLayer) {
+        debugLayer.style.display = debugLayer.style.display === 'none' ? 'block' : 'none';
+      }
+    };
+    document.body.appendChild(debugBtn);
+  }
+}
+
+// 页面加载完成后添加调试按钮
+setTimeout(addDebugButton, 2000);
+</script>
+
+<!-- 调试样式 -->
+<style>
+.debug-panel { max-width: 800px; margin: 0 auto; }
+.debug-section { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; }
+.debug-btn { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 5px; }
+.debug-result { margin: 10px 0; }
+.debug-status, .debug-info { background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 4px; }
+.debug-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; }
+.debug-error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; }
+</style>
+
 <!-- 加载认证系统 -->
 <script src="javascripts/auth-config.js"></script>
 <script src="javascripts/auth.js"></script>
 <script src="javascripts/admin.js"></script>
+<script src="javascripts/config-sync.js"></script>
 
 </body>
 </html>
