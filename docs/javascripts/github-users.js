@@ -373,3 +373,6 @@ class GitHubUsersManager {
 
 // 初始化GitHub用户管理器
 window.githubUsersManager = new GitHubUsersManager();
+
+// 确保全局可用
+console.log('GitHubUsersManager initialized globally:', window.githubUsersManager);
