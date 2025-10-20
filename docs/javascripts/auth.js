@@ -122,9 +122,9 @@ class GitHubAuth {
           window.AUTH_CONFIG.allowedUsers = this.config.allowedUsers;
           window.AUTH_CONFIG.adminUsers = this.config.adminUsers;
         }
-      } catch (error) {
-        console.error('Error loading saved config:', error);
       }
+    } catch (error) {
+      console.error('Error loading saved config:', error);
     }
   }
 
