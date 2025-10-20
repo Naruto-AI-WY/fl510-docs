@@ -83,53 +83,84 @@ class GitHubAuth {
   // 加载保存的配置
   async loadSavedConfig() {
     try {
-      // 首先尝试从云端加载配置
-      if (window.configSync && window.configSync.githubToken) {
-        const cloudConfig = await window.configSync.loadConfig();
-        if (cloudConfig) {
-          console.log('Loaded config from cloud:', cloudConfig);
-          // 合并云端配置
-          if (cloudConfig.allowedUsers) {
-            this.config.allowedUsers = cloudConfig.allowedUsers;
-            console.log('Updated allowed users from cloud:', this.config.allowedUsers);
-          }
-          if (cloudConfig.adminUsers) {
-            this.config.adminUsers = cloudConfig.adminUsers;
-            console.log('Updated admin users from cloud:', this.config.adminUsers);
-          }
-          // 更新全局配置
-          window.AUTH_CONFIG = this.config;
-          return;
-        }
+      console.log('Loading configuration...');
+      
+      // 优先从服务器（GitHub Gist）加载配置
+      const serverConfig = await this.loadConfigFromServer();
+      if (serverConfig) {
+        console.log('Loaded config from server:', serverConfig);
+        this.applyConfig(serverConfig);
+        return;
       }
       
-      // 如果云端加载失败，从本地存储加载
+      // 如果服务器加载失败，尝试从本地存储加载
       const savedConfig = localStorage.getItem('fl510_docs_config');
       if (savedConfig) {
         const parsedConfig = JSON.parse(savedConfig);
         console.log('Loading saved config from localStorage:', parsedConfig);
+        this.applyConfig(parsedConfig);
         
-        // 合并保存的配置到当前配置
-        if (parsedConfig.allowedUsers) {
-          this.config.allowedUsers = parsedConfig.allowedUsers;
-          console.log('Updated allowed users:', this.config.allowedUsers);
-        }
-        if (parsedConfig.adminUsers) {
-          this.config.adminUsers = parsedConfig.adminUsers;
-          console.log('Updated admin users:', this.config.adminUsers);
-        }
-        
-        // 同时更新全局配置
-        if (window.AUTH_CONFIG) {
-          window.AUTH_CONFIG.allowedUsers = this.config.allowedUsers;
-          window.AUTH_CONFIG.adminUsers = this.config.adminUsers;
+        // 如果本地有配置但服务器没有，尝试同步到服务器
+        if (window.configSync && window.configSync.githubToken) {
+          console.log('Syncing local config to server...');
+          this.syncConfigToServer();
         }
       } else {
-        // 如果没有本地配置，检查是否需要设置云端同步
+        // 如果都没有配置，检查是否需要设置云端同步
         this.checkCloudSyncSetup();
       }
     } catch (error) {
       console.error('Error loading saved config:', error);
+    }
+  }
+
+  // 从服务器加载配置
+  async loadConfigFromServer() {
+    try {
+      if (!window.configSync || !window.configSync.githubToken) {
+        console.log('No server sync configured');
+        return null;
+      }
+
+      const cloudConfig = await window.configSync.loadConfig();
+      if (cloudConfig && (cloudConfig.allowedUsers || cloudConfig.adminUsers)) {
+        return cloudConfig;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Failed to load config from server:', error);
+      return null;
+    }
+  }
+
+  // 应用配置到系统
+  applyConfig(config) {
+    if (config.allowedUsers) {
+      this.config.allowedUsers = config.allowedUsers;
+      console.log('Updated allowed users:', this.config.allowedUsers);
+    }
+    if (config.adminUsers) {
+      this.config.adminUsers = config.adminUsers;
+      console.log('Updated admin users:', this.config.adminUsers);
+    }
+    
+    // 更新全局配置
+    if (window.AUTH_CONFIG) {
+      window.AUTH_CONFIG.allowedUsers = this.config.allowedUsers;
+      window.AUTH_CONFIG.adminUsers = this.config.adminUsers;
+    }
+  }
+
+  // 同步配置到服务器
+  async syncConfigToServer() {
+    try {
+      if (window.configSync && window.configSync.syncConfig) {
+        await window.configSync.syncConfig();
+        console.log('Config synced to server successfully');
+      }
+    } catch (error) {
+      console.error('Failed to sync config to server:', error);
     }
   }
 

@@ -46,6 +46,7 @@ nav:
   - 配置测试: test-config.html
   - 同步测试: test-config-sync.html
   - 同步调试: debug-sync.html
+  - 服务器配置: server-config.html
   - 服务:
       - 上位机服务:
           - 配液任务下发: services/host/dispense-task.md

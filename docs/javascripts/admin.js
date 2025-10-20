@@ -340,15 +340,18 @@ class AdminPanel {
   }
 
   // 更新配置
-  updateConfig() {
+  async updateConfig() {
+    console.log('Updating configuration...');
+    
     // 保存配置到本地存储
     localStorage.setItem('fl510_docs_config', JSON.stringify(window.AUTH_CONFIG));
+    console.log('Configuration saved to localStorage');
     
     // 通知认证系统配置已更新
     if (window.githubAuth) {
       // 重新加载配置
       window.githubAuth.config = window.AUTH_CONFIG;
-      console.log('Configuration updated:', window.AUTH_CONFIG);
+      console.log('Configuration updated in auth system:', window.AUTH_CONFIG);
     }
     
     // 触发自定义事件通知其他组件
@@ -356,10 +359,68 @@ class AdminPanel {
       detail: { config: window.AUTH_CONFIG }
     }));
     
-    // 如果启用了配置同步，同步到云端
+    // 优先同步到服务器（GitHub Gist）
     if (window.configSync && window.configSync.githubToken) {
-      window.configSync.syncConfig();
+      try {
+        console.log('Syncing configuration to server...');
+        await window.configSync.syncConfig();
+        console.log('Configuration synced to server successfully');
+        
+        // 显示成功提示
+        this.showSyncStatus('配置已保存到服务器', 'success');
+      } catch (error) {
+        console.error('Failed to sync to server:', error);
+        this.showSyncStatus('配置已保存到本地，但服务器同步失败', 'warning');
+      }
+    } else {
+      console.log('No server sync configured, only saved locally');
+      this.showSyncStatus('配置已保存到本地（建议设置服务器同步）', 'info');
     }
+  }
+
+  // 显示同步状态
+  showSyncStatus(message, type = 'info') {
+    // 创建状态提示
+    const statusDiv = document.createElement('div');
+    statusDiv.className = `sync-status sync-status-${type}`;
+    statusDiv.textContent = message;
+    statusDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      z-index: 10000;
+      max-width: 300px;
+      word-wrap: break-word;
+    `;
+    
+    // 根据类型设置样式
+    switch (type) {
+      case 'success':
+        statusDiv.style.background = '#28a745';
+        break;
+      case 'warning':
+        statusDiv.style.background = '#ffc107';
+        statusDiv.style.color = '#212529';
+        break;
+      case 'error':
+        statusDiv.style.background = '#dc3545';
+        break;
+      default:
+        statusDiv.style.background = '#17a2b8';
+    }
+    
+    document.body.appendChild(statusDiv);
+    
+    // 3秒后自动移除
+    setTimeout(() => {
+      if (statusDiv.parentNode) {
+        statusDiv.parentNode.removeChild(statusDiv);
+      }
+    }, 3000);
   }
 
   // 刷新内容
