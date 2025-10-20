@@ -763,44 +763,8 @@ class GitHubAuth {
       this.checkAuthStatus();
     }, this.config.authCheckInterval);
     
-    // 定期检查用户信息位置和样式（减少频率避免无限循环）
-    setInterval(() => {
-      if (this.isAuthenticated) {
-        const userInfo = document.getElementById('user-info');
-        if (userInfo) {
-          const rect = userInfo.getBoundingClientRect();
-          const computedStyle = window.getComputedStyle(userInfo);
-          
-          // 检查位置（修复逻辑错误 - 只有在位置明显错误时才重新定位）
-          if (rect.top > 100 || rect.left < window.innerWidth - 300) {
-            console.log('User info not in correct position, repositioning...');
-            this.forceRepositionUserInfo();
-          }
-          
-          // 检查样式是否被覆盖（修复检查条件）
-          if (computedStyle.position !== 'fixed' || 
-              (computedStyle.top !== '20px' && computedStyle.top !== '0px') || 
-              (computedStyle.right !== '20px' && computedStyle.right !== '0px')) {
-            console.log('User info styles overridden, reapplying...');
-            if (this.applyConsistentStyles) {
-              this.applyConsistentStyles();
-            }
-          }
-          
-          // 检查按钮样式是否被覆盖
-          const adminBtn = userInfo.querySelector('.admin-toggle-btn');
-          if (adminBtn) {
-            const btnStyle = window.getComputedStyle(adminBtn);
-            if (!btnStyle.background.includes('gradient') && !btnStyle.background.includes('rgb(111, 66, 193)')) {
-              console.log('Admin button styles overridden, reapplying...');
-              if (this.applyConsistentStyles) {
-                this.applyConsistentStyles();
-              }
-            }
-          }
-        }
-      }
-    }, 15000); // 每15秒检查一次，避免无限循环
+    // 禁用定期检查，避免无限循环
+    // 位置和样式检查现在只在特定事件时触发
   }
 
   // 添加认证相关样式

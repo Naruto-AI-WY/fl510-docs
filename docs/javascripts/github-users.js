@@ -102,7 +102,7 @@ class GitHubUsersManager {
       
       // 如果Gist没有配置，尝试从GitHub仓库获取共享的Gist ID
       const sharedGistId = await this.getSharedGistId();
-      if (sharedGistId) {
+      if (sharedGistId && sharedGistId !== 'placeholder') {
         console.log('Found shared Gist ID:', sharedGistId);
         localStorage.setItem('fl510_gist_id', sharedGistId);
         // 再次尝试从Gist获取配置
@@ -246,7 +246,14 @@ class GitHubUsersManager {
         const data = await response.json();
         const gistId = atob(data.content).trim();
         console.log('Retrieved shared Gist ID:', gistId);
-        return gistId;
+        
+        // 检查是否是有效的Gist ID（不是占位符）
+        if (gistId && gistId !== 'placeholder' && gistId.length > 10) {
+          return gistId;
+        } else {
+          console.log('Invalid or placeholder Gist ID:', gistId);
+          return null;
+        }
       } else if (response.status === 404) {
         console.log('No shared Gist ID found');
         return null;
