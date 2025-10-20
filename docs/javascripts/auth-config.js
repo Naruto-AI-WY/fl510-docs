@@ -1,8 +1,8 @@
 // GitHub OAuth认证配置
 window.AUTH_CONFIG = {
   // GitHub OAuth App配置（需要在GitHub上创建）
-  clientId: 'YOUR_GITHUB_CLIENT_ID', // 需要替换为实际的Client ID
-  redirectUri: window.location.origin + window.location.pathname,
+  clientId: 'Ov23liRKjdSsXU8roqUl', // 需要替换为实际的Client ID
+  redirectUri: 'https://naruto-ai-wy.github.io/fl510-docs/',
   
   // 允许访问的用户列表（GitHub用户名）
   allowedUsers: [
