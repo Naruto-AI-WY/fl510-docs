@@ -255,8 +255,10 @@ class GitHubUsersManager {
 
   // 添加用户
   async addUser() {
-    const usernameInput = document.getElementById('new-username');
-    const username = usernameInput.value.trim();
+    // 尝试多个可能的输入框ID
+    let usernameInput = document.getElementById('github-new-username') || 
+                       document.getElementById('new-username');
+    const username = usernameInput ? usernameInput.value.trim() : '';
     
     if (!username) {
       alert('请输入GitHub用户名');
@@ -274,7 +276,9 @@ class GitHubUsersManager {
     const success = await this.addUserToGitHub(username);
     if (success) {
       alert(`用户 ${username} 已添加`);
-      usernameInput.value = '';
+      if (usernameInput) {
+        usernameInput.value = '';
+      }
       this.updateUsersList();
     } else {
       alert(`用户 ${username} 已存在或添加失败`);

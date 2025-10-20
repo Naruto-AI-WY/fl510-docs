@@ -910,9 +910,9 @@ AdminPanel.prototype.createSyncTab = function() {
       
       <div class="github-users-section">
         <div class="form-group">
-          <label for="new-username">添加新用户:</label>
+          <label for="github-new-username">添加新用户:</label>
           <div style="display: flex; gap: 10px; margin: 10px 0;">
-            <input type="text" id="new-username" placeholder="输入GitHub用户名" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <input type="text" id="github-new-username" placeholder="输入GitHub用户名" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             <button onclick="githubUsersManager.addUser()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">添加用户</button>
           </div>
         </div>
