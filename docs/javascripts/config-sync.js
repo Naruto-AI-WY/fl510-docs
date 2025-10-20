@@ -63,12 +63,12 @@ class ConfigSync {
   async syncConfig() {
     if (!this.githubToken) {
       console.log('No GitHub token available for sync');
-      return;
+      return Promise.resolve();
     }
 
     try {
       const config = window.AUTH_CONFIG;
-      if (!config) return;
+      if (!config) return Promise.resolve();
 
       const configData = {
         allowedUsers: config.allowedUsers || [],
@@ -86,8 +86,10 @@ class ConfigSync {
       }
 
       console.log('Config synced to GitHub Gist');
+      return Promise.resolve();
     } catch (error) {
       console.error('Failed to sync config:', error);
+      return Promise.reject(error);
     }
   }
 
@@ -148,14 +150,14 @@ class ConfigSync {
   async loadConfig() {
     if (!this.githubToken) {
       console.log('No GitHub token available for loading config');
-      return null;
+      return Promise.resolve(null);
     }
 
     // 从localStorage获取Gist ID
     this.gistId = localStorage.getItem('fl510_gist_id');
     if (!this.gistId) {
       console.log('No Gist ID found');
-      return null;
+      return Promise.resolve(null);
     }
 
     try {
@@ -173,7 +175,7 @@ class ConfigSync {
         if (configFile) {
           const configData = JSON.parse(configFile.content);
           console.log('Loaded config from GitHub Gist:', configData);
-          return configData;
+          return Promise.resolve(configData);
         }
       } else {
         console.error('Failed to load Gist:', response.status);
@@ -182,7 +184,7 @@ class ConfigSync {
       console.error('Error loading config from Gist:', error);
     }
 
-    return null;
+    return Promise.resolve(null);
   }
 
   // 显示配置同步设置界面
@@ -251,7 +253,7 @@ class ConfigSync {
     
     if (!token) {
       alert('请输入GitHub Personal Access Token');
-      return;
+      return Promise.resolve();
     }
 
     this.githubToken = token;
@@ -269,7 +271,11 @@ class ConfigSync {
       if (response.ok) {
         alert('GitHub同步设置成功！');
         this.setupPeriodicSync();
-        document.getElementById('sync-settings-modal').remove();
+        const modal = document.getElementById('sync-settings-modal');
+        if (modal) {
+          modal.remove();
+        }
+        return Promise.resolve();
       } else {
         throw new Error('Invalid token');
       }
@@ -277,6 +283,7 @@ class ConfigSync {
       alert('Token无效，请检查是否正确');
       this.githubToken = null;
       localStorage.removeItem('github_sync_token');
+      return Promise.reject(error);
     }
   }
 
@@ -437,6 +444,18 @@ class ConfigSync {
     document.head.appendChild(styles);
   }
 }
+
+// 添加全局Promise错误处理（Safari兼容性）
+window.addEventListener('unhandledrejection', function(event) {
+  console.warn('Unhandled promise rejection:', event.reason);
+  event.preventDefault(); // 防止错误显示在控制台
+});
+
+// 添加全局错误处理
+window.addEventListener('error', function(event) {
+  console.warn('Global error caught:', event.error);
+  event.preventDefault();
+});
 
 // 初始化配置同步系统
 window.configSync = new ConfigSync();

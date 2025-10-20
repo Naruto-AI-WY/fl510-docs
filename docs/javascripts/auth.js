@@ -5,7 +5,9 @@ class GitHubAuth {
     this.user = null;
     this.isAuthenticated = false;
     this.isAdmin = false;
-    this.loadSavedConfig();
+    this.loadSavedConfig().catch(error => {
+      console.warn('Error loading saved config:', error);
+    });
     this.init();
   }
 
