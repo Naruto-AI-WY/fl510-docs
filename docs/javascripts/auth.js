@@ -425,9 +425,21 @@ class GitHubAuth {
 
     // 绑定管理员按钮事件
     const adminBtn = document.getElementById('admin-toggle-btn');
-    if (adminBtn && window.adminPanel) {
-      adminBtn.addEventListener('click', () => {
-        window.adminPanel.toggleAdminPanel();
+    if (adminBtn) {
+      // 移除旧的事件监听器（如果存在）
+      const newAdminBtn = adminBtn.cloneNode(true);
+      adminBtn.parentNode.replaceChild(newAdminBtn, adminBtn);
+      
+      // 添加新的事件监听器
+      newAdminBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Admin button clicked');
+        if (window.adminPanel) {
+          window.adminPanel.toggleAdminPanel();
+        } else {
+          console.log('Admin panel not available');
+        }
       });
     }
 
@@ -526,9 +538,21 @@ class GitHubAuth {
               this.applyConsistentStyles();
             }
           }
+          
+          // 检查按钮样式是否被覆盖
+          const adminBtn = userInfo.querySelector('.admin-toggle-btn');
+          if (adminBtn) {
+            const btnStyle = window.getComputedStyle(adminBtn);
+            if (!btnStyle.background.includes('gradient') && !btnStyle.background.includes('rgb(111, 66, 193)')) {
+              console.log('Admin button styles overridden, reapplying...');
+              if (this.applyConsistentStyles) {
+                this.applyConsistentStyles();
+              }
+            }
+          }
         }
       }
-    }, 2000); // 每2秒检查一次
+    }, 1000); // 每1秒检查一次
   }
 
   // 添加认证相关样式
@@ -1036,6 +1060,45 @@ GitHubAuth.prototype.applyConsistentStyles = function() {
           display: flex !important;
           gap: 8px !important;
           align-items: center !important;
+        `;
+      }
+      
+      // 应用管理员按钮样式
+      const adminBtn = userInfo.querySelector('.admin-toggle-btn');
+      if (adminBtn) {
+        adminBtn.style.cssText = `
+          background: linear-gradient(135deg, #6f42c1, #e83e8c) !important;
+          color: white !important;
+          border: none !important;
+          padding: 6px 10px !important;
+          border-radius: 6px !important;
+          cursor: pointer !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          transition: all 0.2s !important;
+          display: flex !important;
+          align-items: center !important;
+          gap: 4px !important;
+          text-decoration: none !important;
+          outline: none !important;
+        `;
+      }
+      
+      // 应用退出按钮样式
+      const logoutBtn = userInfo.querySelector('.logout-btn');
+      if (logoutBtn) {
+        logoutBtn.style.cssText = `
+          background: linear-gradient(135deg, #dc3545, #fd7e14) !important;
+          color: white !important;
+          border: none !important;
+          padding: 6px 10px !important;
+          border-radius: 6px !important;
+          cursor: pointer !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          transition: all 0.2s !important;
+          text-decoration: none !important;
+          outline: none !important;
         `;
       }
       

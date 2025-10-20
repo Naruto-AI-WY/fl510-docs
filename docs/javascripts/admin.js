@@ -809,8 +809,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 监听用户信息创建完成事件
 window.addEventListener('userInfoCreated', () => {
-  // 如果用户是管理员且管理面板已初始化，创建管理员按钮
-  if (window.githubAuth && window.githubAuth.isAdmin && window.adminPanel) {
-    window.adminPanel.createAdminButton();
+  // 如果用户是管理员，确保管理面板已初始化
+  if (window.githubAuth && window.githubAuth.isAdmin) {
+    // 如果管理面板不存在，创建它
+    if (!window.adminPanel) {
+      console.log('Creating admin panel for admin user');
+      window.adminPanel = new AdminPanel(window.githubAuth);
+    }
+    
+    // 创建管理员按钮
+    if (window.adminPanel) {
+      window.adminPanel.createAdminButton();
+    }
   }
 });
