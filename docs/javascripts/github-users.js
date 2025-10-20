@@ -141,13 +141,22 @@ class GitHubUsersManager {
       // 首先尝试从GitHub仓库获取配置（最可靠的方法）
       const repoConfig = await this.getConfigFromGitHub();
       if (repoConfig) {
-        const current = this.getCurrentConfig();
-        // 始终合并（取并集），并采用较新的 lastUpdated，防止旧端覆盖新端
-        const finalCfg = this.mergeConfigs(current, repoConfig);
-        console.log('Using GitHub repo config:', finalCfg);
-        this.applyConfig(finalCfg);
-        localStorage.setItem('fl510_docs_config', JSON.stringify(finalCfg));
-        // 被动刷新不推回仓库，只在增删时写回
+        // 主动“同步用户”以仓库为准：直接替换本地配置
+        console.log('Using GitHub repo config:', repoConfig);
+        this.applyConfigReplace(repoConfig);
+        localStorage.setItem('fl510_docs_config', JSON.stringify(repoConfig));
+        // 通知系统配置已更新，触发鉴权重评估
+        try {
+          window.dispatchEvent(new CustomEvent('configUpdated', { detail: { config: repoConfig } }));
+          // 如果当前已登录但已不在白名单，则强制登出
+          if (window.githubAuth && window.githubAuth.isAuthenticated && window.githubAuth.user) {
+            const login = window.githubAuth.user.login;
+            const allowed = Array.isArray(repoConfig.allowedUsers) && repoConfig.allowedUsers.includes(login);
+            if (!allowed && typeof window.githubAuth.logout === 'function') {
+              window.githubAuth.logout();
+            }
+          }
+        } catch (_) {}
         return true;
       }
       
