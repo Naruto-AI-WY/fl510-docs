@@ -124,10 +124,195 @@ class GitHubAuth {
           window.AUTH_CONFIG.allowedUsers = this.config.allowedUsers;
           window.AUTH_CONFIG.adminUsers = this.config.adminUsers;
         }
+      } else {
+        // 如果没有本地配置，检查是否需要设置云端同步
+        this.checkCloudSyncSetup();
       }
     } catch (error) {
       console.error('Error loading saved config:', error);
     }
+  }
+
+  // 检查云端同步设置
+  checkCloudSyncSetup() {
+    // 如果用户是管理员且没有设置云端同步，显示提示
+    if (this.isAdmin && (!window.configSync || !window.configSync.githubToken)) {
+      setTimeout(() => {
+        this.showCloudSyncPrompt();
+      }, 2000); // 延迟2秒显示，避免干扰登录流程
+    }
+  }
+
+  // 显示云端同步设置提示
+  showCloudSyncPrompt() {
+    const modal = document.createElement('div');
+    modal.id = 'cloud-sync-prompt';
+    modal.innerHTML = `
+      <div class="cloud-sync-overlay">
+        <div class="cloud-sync-modal">
+          <div class="cloud-sync-header">
+            <h3>🔗 配置云端同步</h3>
+            <button class="close-btn" onclick="this.closest('#cloud-sync-prompt').remove()">×</button>
+          </div>
+          <div class="cloud-sync-body">
+            <div class="sync-warning">
+              <p><strong>⚠️ 重要提示：</strong></p>
+              <p>您添加的用户配置目前只保存在浏览器本地，清除浏览器记录后会丢失。</p>
+              <p>建议设置云端同步，这样在任何浏览器和设备上都能访问相同的用户配置。</p>
+            </div>
+            <div class="sync-benefits">
+              <h4>云端同步的优势：</h4>
+              <ul>
+                <li>✅ 跨浏览器同步：Chrome、Safari、Firefox等</li>
+                <li>✅ 跨设备同步：手机、平板、电脑</li>
+                <li>✅ 数据安全：配置保存在您的GitHub账号中</li>
+                <li>✅ 自动备份：不会因清除浏览器记录而丢失</li>
+              </ul>
+            </div>
+            <div class="sync-actions">
+              <button onclick="window.adminPanel && window.adminPanel.showAdminPanel(); this.closest('#cloud-sync-prompt').remove();" class="setup-sync-btn">
+                🔧 立即设置云端同步
+              </button>
+              <button onclick="this.closest('#cloud-sync-prompt').remove();" class="skip-btn">
+                稍后设置
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    this.addCloudSyncStyles();
+  }
+
+  // 添加云端同步提示样式
+  addCloudSyncStyles() {
+    if (document.getElementById('cloud-sync-styles')) return;
+
+    const styles = document.createElement('style');
+    styles.id = 'cloud-sync-styles';
+    styles.textContent = `
+      .cloud-sync-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+      }
+
+      .cloud-sync-modal {
+        background: white;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .cloud-sync-header {
+        background: linear-gradient(135deg, #0366d6, #28a745);
+        color: white;
+        padding: 20px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .cloud-sync-header h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .cloud-sync-body {
+        padding: 24px;
+      }
+
+      .sync-warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 6px;
+        padding: 16px;
+        margin-bottom: 20px;
+      }
+
+      .sync-warning p {
+        margin: 8px 0;
+        color: #856404;
+      }
+
+      .sync-benefits {
+        background: #e3f2fd;
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+      }
+
+      .sync-benefits h4 {
+        margin: 0 0 12px 0;
+        color: #1976d2;
+      }
+
+      .sync-benefits ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .sync-benefits li {
+        margin: 4px 0;
+        color: #424242;
+      }
+
+      .sync-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+
+      .setup-sync-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .skip-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+    `;
+
+    document.head.appendChild(styles);
   }
 
   // 检查当前认证状态
