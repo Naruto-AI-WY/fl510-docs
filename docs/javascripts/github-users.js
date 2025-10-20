@@ -82,7 +82,8 @@ class GitHubUsersManager {
         try {
           const incoming = JSON.parse(e.newValue);
           const merged = this.mergeConfigs(this.getCurrentConfig(), incoming);
-          this.maybeApplyConfig(merged);
+          // 来自其他标签的更新，静默应用，避免再次写回触发回环
+          this.applyConfig(merged, { silent: true });
         } catch (error) {
           console.error('Failed to parse config from storage:', error);
         }
@@ -96,7 +97,8 @@ class GitHubUsersManager {
         if (event.data.type === 'user-update') {
           console.log('User update received via broadcast:', event.data.config);
           const merged = this.mergeConfigs(this.getCurrentConfig(), event.data.config);
-          this.maybeApplyConfig(merged);
+          // 广播属于主动端推送，静默应用避免本地再次广播
+          this.applyConfig(merged, { silent: true });
         }
       };
     }
@@ -501,7 +503,7 @@ class GitHubUsersManager {
   }
 
   // 应用配置
-  applyConfig(config) {
+  applyConfig(config, options = {}) {
     // 与当前配置做并集合并，避免被旧端缩减覆盖
     const current = this.getCurrentConfig();
     const merged = this.mergeConfigs(current, config);
@@ -524,11 +526,19 @@ class GitHubUsersManager {
       }
     }
 
-    // 保存到本地存储（触发其他标签 storage 事件）
-    localStorage.setItem('fl510_docs_config', JSON.stringify(merged));
+    // 保存到本地存储（触发其他标签 storage 事件），静默模式下不触发广播回环
+    if (!options.silent) {
+      localStorage.setItem('fl510_docs_config', JSON.stringify(merged));
+    } else {
+      try {
+        // 仍更新本地，但不期望触发回环（某些浏览器对同值写入不触发事件）
+        const prev = localStorage.getItem('fl510_docs_config');
+        const next = JSON.stringify(merged);
+        if (prev !== next) localStorage.setItem('fl510_docs_config', next);
+      } catch (_) {}
+    }
     
     console.log('Config applied:', merged);
-    try { localStorage.setItem('fl510_docs_config', JSON.stringify(merged)); } catch (_) {}
   }
 
   // 若可用，尝试向服务器汇聚最新配置（仓库/Gist）
