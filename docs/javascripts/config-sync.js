@@ -304,7 +304,14 @@ class ConfigSync {
 
   // 设置同步
   async setupSync() {
+    console.log('setupSync called');
+    
     const tokenInput = document.getElementById('github-token-input');
+    if (!tokenInput) {
+      alert('找不到Token输入框，请刷新页面重试');
+      return Promise.resolve();
+    }
+    
     const token = tokenInput.value.trim();
     
     if (!token) {
@@ -312,11 +319,14 @@ class ConfigSync {
       return Promise.resolve();
     }
 
+    console.log('Setting up sync with token:', token.substring(0, 10) + '...');
+    
     this.githubToken = token;
     localStorage.setItem('github_sync_token', token);
     
     // Safari兼容的fetch请求
     try {
+      console.log('Testing GitHub token...');
       const requestOptions = {
         method: 'GET',
         headers: {
@@ -329,20 +339,36 @@ class ConfigSync {
       // Safari兼容的fetch调用
       const response = await this.safariCompatibleFetch('https://api.github.com/user', requestOptions);
       
+      console.log('GitHub API response:', response);
+      
       if (response && response.ok) {
-        alert('GitHub同步设置成功！');
+        const userData = await response.json();
+        console.log('GitHub user data:', userData);
+        
+        alert(`GitHub同步设置成功！\n用户: ${userData.login}\n邮箱: ${userData.email || '未公开'}`);
+        
+        // 设置定期同步
         this.setupPeriodicSync();
+        
+        // 关闭模态框
         const modal = document.getElementById('sync-settings-modal');
         if (modal) {
           modal.remove();
         }
+        
+        // 刷新页面以更新状态
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+        
         return Promise.resolve();
       } else {
-        throw new Error('Invalid token or network error');
+        console.error('GitHub API error:', response);
+        throw new Error(`GitHub API错误: ${response ? response.status : '网络错误'}`);
       }
     } catch (error) {
-      console.error('Safari setupSync error:', error);
-      alert('Safari浏览器Token验证失败，请检查网络连接和Token是否正确');
+      console.error('setupSync error:', error);
+      alert(`Token验证失败: ${error.message}\n请检查网络连接和Token是否正确`);
       this.githubToken = null;
       localStorage.removeItem('github_sync_token');
       return Promise.reject(error);
@@ -724,6 +750,20 @@ function initializeConfigSync() {
         window.configSync[key] = realConfigSync[key];
       }
     });
+    
+    // 加载已保存的Token
+    const savedToken = localStorage.getItem('github_sync_token');
+    if (savedToken) {
+      window.configSync.githubToken = savedToken;
+      console.log('Loaded saved GitHub token');
+    }
+    
+    // 加载已保存的Gist ID
+    const savedGistId = localStorage.getItem('fl510_gist_id');
+    if (savedGistId) {
+      window.configSync.gistId = savedGistId;
+      console.log('Loaded saved Gist ID:', savedGistId);
+    }
     
     window.configSync.initialized = true;
     
