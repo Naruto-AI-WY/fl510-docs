@@ -857,16 +857,16 @@ AdminPanel.prototype.createSyncTab = function() {
           </ol>
           <div class="token-input">
             <input type="password" id="github-token-input" placeholder="输入GitHub Personal Access Token">
-            <button onclick="window.configSync.setupSync()">启用同步</button>
+            <button onclick="if(window.configSync && window.configSync.setupSync) { window.configSync.setupSync(); } else { alert('配置同步功能未加载'); }">启用同步</button>
           </div>
         </div>
       ` : `
         <div class="sync-actions">
           <h5>同步操作</h5>
           <div class="sync-buttons">
-            <button onclick="window.configSync.syncConfig()" class="sync-btn">🔄 立即同步</button>
-            <button onclick="window.configSync.loadConfig()" class="sync-btn">📥 从云端加载</button>
-            <button onclick="window.configSync.disableSync()" class="sync-btn danger">❌ 禁用同步</button>
+            <button onclick="if(window.configSync && window.configSync.syncConfig) { window.configSync.syncConfig(); } else { alert('配置同步功能未加载'); }" class="sync-btn">🔄 立即同步</button>
+            <button onclick="if(window.configSync && window.configSync.loadConfig) { window.configSync.loadConfig(); } else { alert('配置同步功能未加载'); }" class="sync-btn">📥 从云端加载</button>
+            <button onclick="if(window.configSync && window.configSync.disableSync) { window.configSync.disableSync(); } else { alert('配置同步功能未加载'); }" class="sync-btn danger">❌ 禁用同步</button>
           </div>
         </div>
       `}
