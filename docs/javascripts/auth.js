@@ -431,6 +431,9 @@ class GitHubAuth {
       });
     }
 
+    // 强制应用所有样式，确保一致性
+    this.applyConsistentStyles();
+
     // 触发用户信息创建完成事件
     window.dispatchEvent(new CustomEvent('userInfoCreated', {
       detail: { user: this.user, isAdmin: this.isAdmin }
@@ -498,20 +501,30 @@ class GitHubAuth {
       this.checkAuthStatus();
     }, this.config.authCheckInterval);
     
-    // 定期检查用户信息位置
+    // 定期检查用户信息位置和样式
     setInterval(() => {
       if (this.isAuthenticated) {
         const userInfo = document.getElementById('user-info');
         if (userInfo) {
           const rect = userInfo.getBoundingClientRect();
-          // 检查是否在正确位置（右上角）
+          const computedStyle = window.getComputedStyle(userInfo);
+          
+          // 检查位置
           if (rect.top > 50 || rect.left < window.innerWidth - 200) {
             console.log('User info not in correct position, repositioning...');
             this.forceRepositionUserInfo();
           }
+          
+          // 检查样式是否被覆盖
+          if (computedStyle.position !== 'fixed' || 
+              computedStyle.top !== '0px' || 
+              computedStyle.right !== '0px') {
+            console.log('User info styles overridden, reapplying...');
+            this.applyConsistentStyles();
+          }
         }
       }
-    }, 5000); // 每5秒检查一次
+    }, 2000); // 每2秒检查一次
   }
 
   // 添加认证相关样式
@@ -945,26 +958,92 @@ window.addEventListener('load', () => {
   }
 });
 
-// 添加强制重新定位方法
-GitHubAuth.prototype.forceRepositionUserInfo = function() {
-  const userInfo = document.getElementById('user-info');
-  if (userInfo) {
-    // 强制重置所有可能影响位置的样式
-    userInfo.style.position = 'fixed';
-    userInfo.style.top = '0';
-    userInfo.style.right = '0';
-    userInfo.style.left = 'auto';
-    userInfo.style.bottom = 'auto';
-    userInfo.style.zIndex = '9999';
-    userInfo.style.transform = 'none';
-    userInfo.style.float = 'none';
-    userInfo.style.clear = 'none';
-    userInfo.style.margin = '0';
-    userInfo.style.width = 'auto';
-    userInfo.style.height = 'auto';
-    
-    console.log('Force repositioned user info to top-right');
+  // 应用一致的样式
+  applyConsistentStyles() {
+    const userInfo = document.getElementById('user-info');
+    if (userInfo) {
+      // 应用所有样式，确保在所有页面上都一致
+      userInfo.style.cssText = `
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        left: auto !important;
+        bottom: auto !important;
+        z-index: 9999 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid #e1e4e8 !important;
+        border-radius: 0 0 0 12px !important;
+        padding: 8px 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
+        margin: 0 !important;
+        max-width: none !important;
+        width: auto !important;
+        height: auto !important;
+        transform: none !important;
+        float: none !important;
+        clear: none !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+      `;
+      
+      // 应用容器样式
+      const container = userInfo.querySelector('.user-info-container');
+      if (container) {
+        container.style.cssText = `
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+          flex-direction: row !important;
+          position: relative !important;
+          width: auto !important;
+          height: auto !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+          background: transparent !important;
+          box-shadow: none !important;
+          transform: none !important;
+          float: none !important;
+          clear: none !important;
+        `;
+      }
+      
+      // 应用用户详情样式
+      const userDetails = userInfo.querySelector('.user-details');
+      if (userDetails) {
+        userDetails.style.cssText = `
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 4px !important;
+          flex: 1 !important;
+        `;
+      }
+      
+      // 应用用户操作样式
+      const userActions = userInfo.querySelector('.user-actions');
+      if (userActions) {
+        userActions.style.cssText = `
+          display: flex !important;
+          gap: 8px !important;
+          align-items: center !important;
+        `;
+      }
+      
+      console.log('Applied consistent styles to user info');
+    }
   }
+
+  // 添加强制重新定位方法
+GitHubAuth.prototype.forceRepositionUserInfo = function() {
+  // 直接调用样式应用方法
+  this.applyConsistentStyles();
+  console.log('Force repositioned user info to top-right');
 };
 
 // 添加全局认证状态检查
