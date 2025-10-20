@@ -331,7 +331,7 @@ class GitHubUsersManager {
       }
 
       const content = btoa(gistId); // 编码为base64
-      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`, {
+      let response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`, {
         method: 'PUT',
         headers: {
           'Authorization': `token ${githubToken}`,
@@ -348,7 +348,28 @@ class GitHubUsersManager {
         console.log('Shared Gist ID saved successfully');
         return true;
       } else {
-        console.error('Failed to save shared Gist ID:', response.statusText);
+        if (response.status === 409) {
+          // 冲突：刷新最新SHA后重试一次
+          const latestSha = await this.getFileSha('gist-id.txt');
+          const retryBody = {
+            message: 'Update shared Gist ID',
+            content: content,
+            sha: latestSha
+          };
+          response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/gist-id.txt`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${githubToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(retryBody)
+          });
+          if (response.ok) {
+            console.log('Shared Gist ID saved successfully (after SHA refresh)');
+            return true;
+          }
+        }
+        console.error('Failed to save shared Gist ID:', response.status, response.statusText);
         return false;
       }
     } catch (error) {
@@ -393,7 +414,7 @@ class GitHubUsersManager {
         requestBody.sha = sha;
       }
       
-      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
+      let response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
         method: 'PUT',
         headers: {
           'Authorization': `token ${githubToken}`,
@@ -406,6 +427,25 @@ class GitHubUsersManager {
         console.log('Config saved to GitHub repository successfully');
         return true;
       } else {
+        if (response.status === 409) {
+          // 冲突：刷新最新SHA后重试一次
+          const latestSha = await this.getFileSha(this.configFile);
+          if (latestSha) {
+            requestBody.sha = latestSha;
+            response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `token ${githubToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(requestBody)
+            });
+            if (response.ok) {
+              console.log('Config saved to GitHub repository successfully (after SHA refresh)');
+              return true;
+            }
+          }
+        }
         const errorText = await response.text();
         console.error('Failed to save config to GitHub repository:', response.status, response.statusText, errorText);
         return false;
