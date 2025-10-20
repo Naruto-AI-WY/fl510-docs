@@ -631,6 +631,8 @@ class GitHubUsersManager {
         }
         
         console.log(`User ${username} added to config:`, currentConfig);
+        // 通知用户管理面板刷新
+        this.notifyUserListUpdate();
         return true;
       } else {
         console.log(`User ${username} already exists in config`);
@@ -681,6 +683,8 @@ class GitHubUsersManager {
           }
           
           console.log(`User ${username} removed from config:`, currentConfig);
+          // 通知用户管理面板刷新
+          this.notifyUserListUpdate();
           return true;
         }
       }
@@ -861,6 +865,16 @@ class GitHubUsersManager {
       `;
     } catch (error) {
       usersList.innerHTML = '<p style="color: red;">加载用户列表失败</p>';
+    }
+  }
+
+  // 通知用户管理面板刷新
+  notifyUserListUpdate() {
+    // 触发自定义事件，通知其他组件更新
+    try {
+      window.dispatchEvent(new CustomEvent('userListUpdated'));
+    } catch (error) {
+      console.warn('Failed to dispatch userListUpdated event:', error);
     }
   }
 

@@ -294,6 +294,7 @@ class AdminPanel {
         if (ok) {
           // 本地UI刷新
           this.refreshUsersList();
+          this.refreshSyncTabUsersList();
           const input = document.getElementById('new-username');
           if (input) input.value = '';
           alert(`用户 ${username} 已成功添加并已同步`);
@@ -305,6 +306,7 @@ class AdminPanel {
         window.AUTH_CONFIG.allowedUsers.push(username);
         this.updateConfig();
         this.refreshUsersList();
+        this.refreshSyncTabUsersList();
         const input = document.getElementById('new-username');
         if (input) input.value = '';
         alert(`用户 ${username} 已添加（本地），同步模块未初始化`);
@@ -340,6 +342,7 @@ class AdminPanel {
       window.githubUsersManager.removeUserFromGitHub(username).then(ok => {
         if (ok) {
           this.refreshUsersList();
+          this.refreshSyncTabUsersList();
           alert('用户已移除并已同步');
         } else {
           alert('移除失败，请检查Token和网络');
@@ -355,6 +358,7 @@ class AdminPanel {
         window.AUTH_CONFIG.allowedUsers.splice(index, 1);
         this.updateConfig();
         this.refreshUsersList();
+        this.refreshSyncTabUsersList();
         alert('用户已移除（本地），同步模块未初始化');
       }
     }
@@ -379,6 +383,13 @@ class AdminPanel {
     }
   }
 
+  // 刷新配置同步标签页的用户列表
+  refreshSyncTabUsersList() {
+    if (window.githubUsersManager && typeof window.githubUsersManager.updateUsersList === 'function') {
+      window.githubUsersManager.updateUsersList();
+    }
+  }
+
   // 跨标签页监听：收到更新时刷新面板
   setupCrossTabListeners() {
     // storage 事件（其他标签页写入 localStorage 时触发）
@@ -389,6 +400,8 @@ class AdminPanel {
           if (cfg && cfg.allowedUsers) {
             if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = cfg.allowedUsers;
             this.refreshUsersList();
+            // 同时更新配置同步标签页的用户列表
+            this.refreshSyncTabUsersList();
           }
         } catch (_) {}
       }
@@ -401,10 +414,27 @@ class AdminPanel {
           if (event && event.data && event.data.type === 'user-update' && event.data.config) {
             if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = event.data.config.allowedUsers || [];
             this.refreshUsersList();
+            // 同时更新配置同步标签页的用户列表
+            this.refreshSyncTabUsersList();
           }
         });
       } catch (_) {}
     }
+
+    // 监听配置更新事件
+    window.addEventListener('configUpdated', (event) => {
+      if (event.detail && event.detail.config) {
+        if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = event.detail.config.allowedUsers || [];
+        this.refreshUsersList();
+        this.refreshSyncTabUsersList();
+      }
+    });
+
+    // 监听用户列表更新事件
+    window.addEventListener('userListUpdated', () => {
+      this.refreshUsersList();
+      this.refreshSyncTabUsersList();
+    });
   }
 
   // 更新配置
