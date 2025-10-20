@@ -40,7 +40,6 @@ extra_javascript:
   - javascripts/auth.js
   - javascripts/admin.js
 nav:
-  - 首页: index.md
   - 认证测试: test-auth.html
   - 服务:
       - 上位机服务:
