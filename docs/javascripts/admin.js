@@ -905,18 +905,9 @@ window.addEventListener('userInfoCreated', () => {
 AdminPanel.prototype.createSyncTab = function() {
   return `
     <div class="admin-section">
-      <h4>👥 GitHub用户管理</h4>
-      <p>系统会自动从GitHub仓库同步用户配置，无需手动输入Token。</p>
-      
+      <h4>🔄 配置同步</h4>
+      <p>配置可从GitHub仓库/Gist自动同步。此处保留同步相关操作。</p>
       <div class="github-users-section">
-        <div class="form-group">
-          <label for="github-new-username">添加新用户:</label>
-          <div style="display: flex; gap: 10px; margin: 10px 0;">
-            <input type="text" id="github-new-username" placeholder="输入GitHub用户名" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-            <button onclick="window.testAddUser()" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">添加用户</button>
-          </div>
-        </div>
-        
         <div class="form-actions" style="margin: 15px 0;">
           <button onclick="githubUsersManager.syncUsers()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">🔄 同步用户</button>
           <button onclick="githubUsersManager.exportConfig()" style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">📤 导出配置</button>
