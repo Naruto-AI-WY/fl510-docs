@@ -919,7 +919,8 @@ AdminPanel.prototype.createSyncTab = function() {
         
         <div class="form-actions" style="margin: 15px 0;">
           <button onclick="githubUsersManager.syncUsers()" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">🔄 同步用户</button>
-          <button onclick="githubUsersManager.exportConfig()" style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">📤 导出配置</button>
+          <button onclick="githubUsersManager.exportConfig()" style="background: #17a2b8; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 10px;">📤 导出配置</button>
+          <button onclick="setupGitHubToken()" style="background: #6f42c1; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">🔑 设置Token</button>
         </div>
         
         <div id="users-list-container" style="margin-top: 15px;">
