@@ -10,6 +10,7 @@ class GitHubUsersManager {
   init() {
     console.log('GitHubUsersManager initialized');
     this.setupAutoSync();
+    this.setupCrossTabSync();
   }
 
   // 设置自动同步
@@ -23,12 +24,47 @@ class GitHubUsersManager {
     this.syncUsersFromGitHub();
   }
 
+  // 设置跨标签页同步
+  setupCrossTabSync() {
+    // 监听localStorage变化
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'fl510_docs_config' && e.newValue) {
+        console.log('Config updated in another tab, applying...');
+        try {
+          const config = JSON.parse(e.newValue);
+          this.applyConfig(config);
+        } catch (error) {
+          console.error('Failed to parse config from storage:', error);
+        }
+      }
+    });
+
+    // 使用BroadcastChannel进行实时同步
+    if (typeof BroadcastChannel !== 'undefined') {
+      this.broadcastChannel = new BroadcastChannel('fl510-users-sync');
+      this.broadcastChannel.onmessage = (event) => {
+        if (event.data.type === 'user-update') {
+          console.log('User update received via broadcast:', event.data.config);
+          this.applyConfig(event.data.config);
+        }
+      };
+    }
+  }
+
   // 从GitHub同步用户
   async syncUsersFromGitHub() {
     try {
       console.log('Syncing users from GitHub...');
       
-      // 尝试从GitHub获取配置
+      // 优先使用本地配置
+      const localConfig = this.getLocalConfig();
+      if (localConfig && localConfig.allowedUsers && localConfig.allowedUsers.length > 0) {
+        console.log('Using local config:', localConfig);
+        this.applyConfig(localConfig);
+        return true;
+      }
+      
+      // 如果本地没有配置，尝试从GitHub获取
       const config = await this.getConfigFromGitHub();
       if (config) {
         this.applyConfig(config);
@@ -36,7 +72,7 @@ class GitHubUsersManager {
         return true;
       }
       
-      // 如果GitHub上没有配置，使用默认配置
+      // 如果都没有，使用默认配置
       const defaultConfig = this.getDefaultConfig();
       this.applyConfig(defaultConfig);
       console.log('Using default config:', defaultConfig);
@@ -141,6 +177,14 @@ class GitHubUsersManager {
         // 保存到本地存储
         localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
         
+        // 通过BroadcastChannel通知其他标签页
+        if (this.broadcastChannel) {
+          this.broadcastChannel.postMessage({
+            type: 'user-update',
+            config: currentConfig
+          });
+        }
+        
         console.log(`User ${username} added to config:`, currentConfig);
         return true;
       } else {
@@ -170,6 +214,14 @@ class GitHubUsersManager {
           
           // 保存到本地存储
           localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
+          
+          // 通过BroadcastChannel通知其他标签页
+          if (this.broadcastChannel) {
+            this.broadcastChannel.postMessage({
+              type: 'user-update',
+              config: currentConfig
+            });
+          }
           
           console.log(`User ${username} removed from config:`, currentConfig);
           return true;
