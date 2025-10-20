@@ -124,7 +124,8 @@ class GitHubUsersManager {
   // 添加用户到GitHub配置
   async addUserToGitHub(username) {
     try {
-      const currentConfig = await this.getConfigFromGitHub() || this.getDefaultConfig();
+      // 优先使用本地配置，而不是从GitHub获取
+      let currentConfig = this.getLocalConfig() || this.getDefaultConfig();
       
       if (!currentConfig.allowedUsers) {
         currentConfig.allowedUsers = [];
@@ -140,11 +141,12 @@ class GitHubUsersManager {
         // 保存到本地存储
         localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
         
-        console.log(`User ${username} added to config`);
+        console.log(`User ${username} added to config:`, currentConfig);
         return true;
+      } else {
+        console.log(`User ${username} already exists in config`);
+        return false;
       }
-      
-      return false;
     } catch (error) {
       console.error('Failed to add user to GitHub config:', error);
       return false;
@@ -154,7 +156,8 @@ class GitHubUsersManager {
   // 从GitHub配置中移除用户
   async removeUserFromGitHub(username) {
     try {
-      const currentConfig = await this.getConfigFromGitHub() || this.getDefaultConfig();
+      // 优先使用本地配置
+      let currentConfig = this.getLocalConfig() || this.getDefaultConfig();
       
       if (currentConfig.allowedUsers) {
         const index = currentConfig.allowedUsers.indexOf(username);
@@ -165,7 +168,10 @@ class GitHubUsersManager {
           // 更新本地配置
           this.applyConfig(currentConfig);
           
-          console.log(`User ${username} removed from config`);
+          // 保存到本地存储
+          localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
+          
+          console.log(`User ${username} removed from config:`, currentConfig);
           return true;
         }
       }
@@ -180,7 +186,8 @@ class GitHubUsersManager {
   // 获取所有用户
   async getAllUsers() {
     try {
-      const config = await this.getConfigFromGitHub() || this.getLocalConfig() || this.getDefaultConfig();
+      // 优先使用本地配置
+      const config = this.getLocalConfig() || this.getDefaultConfig();
       return config.allowedUsers || [];
     } catch (error) {
       console.error('Failed to get all users:', error);
