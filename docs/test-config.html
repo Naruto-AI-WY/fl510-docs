@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        .config-label {
+            font-weight: bold;
+        }
+        .config-value {
+            color: #666;
+            font-family: monospace;
+        }
+        .test-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #0056b3;
+        }
+        .log-output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 配置测试页面</h1>
+    
+    <div class="test-section">
+        <h3>📊 当前配置</h3>
+        <div id="config-display">
+            <div class="config-item">
+                <span class="config-label">允许的用户:</span>
+                <span class="config-value" id="allowed-users-display">加载中...</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">管理员用户:</span>
+                <span class="config-value" id="admin-users-display">加载中...</span>
+            </div>
+            <div class="config-item">
+                <span class="config-label">存储键:</span>
+                <span class="config-value" id="storage-key-display">加载中...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>🧪 测试操作</h3>
+        <button class="test-btn" onclick="refreshConfig()">🔄 刷新配置</button>
+        <button class="test-btn" onclick="testUserLogin()">👤 测试用户登录</button>
+        <button class="test-btn" onclick="addTestUser()">➕ 添加测试用户</button>
+        <button class="test-btn" onclick="clearConfig()">🗑️ 清除配置</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 测试日志</h3>
+        <div class="log-output" id="test-log">等待测试...</div>
+    </div>
+
+    <div class="test-section">
+        <h3>🔗 快速链接</h3>
+        <a href="/" class="test-btn" style="text-decoration: none; display: inline-block;">🏠 返回主页</a>
+        <a href="/debug-auth.html" class="test-btn" style="text-decoration: none; display: inline-block;">🔧 认证调试</a>
+    </div>
+
+    <!-- 加载认证脚本 -->
+    <script src="javascripts/auth-config.js"></script>
+    <script src="javascripts/auth.js"></script>
+    <script src="javascripts/admin.js"></script>
+
+    <script>
+        // 重定向控制台日志到页面
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logOutput = document.getElementById('test-log');
+        
+        function addToLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logOutput.textContent += logEntry;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // 刷新配置显示
+        function refreshConfig() {
+            console.log('Refreshing configuration display...');
+            
+            // 显示当前配置
+            if (window.AUTH_CONFIG) {
+                document.getElementById('allowed-users-display').textContent = 
+                    JSON.stringify(window.AUTH_CONFIG.allowedUsers || []);
+                document.getElementById('admin-users-display').textContent = 
+                    JSON.stringify(window.AUTH_CONFIG.adminUsers || []);
+                document.getElementById('storage-key-display').textContent = 
+                    window.AUTH_CONFIG.authStorageKey || '无';
+            } else {
+                document.getElementById('allowed-users-display').textContent = '配置未加载';
+                document.getElementById('admin-users-display').textContent = '配置未加载';
+                document.getElementById('storage-key-display').textContent = '配置未加载';
+            }
+            
+            // 显示保存的配置
+            const savedConfig = localStorage.getItem('fl510_docs_config');
+            if (savedConfig) {
+                try {
+                    const parsed = JSON.parse(savedConfig);
+                    console.log('Saved config:', parsed);
+                } catch (e) {
+                    console.error('Error parsing saved config:', e);
+                }
+            } else {
+                console.log('No saved config found');
+            }
+        }
+        
+        // 测试用户登录
+        function testUserLogin() {
+            const username = prompt('请输入要测试的GitHub用户名:');
+            if (username) {
+                console.log('Testing login for user:', username);
+                
+                // 检查用户是否在允许列表中
+                const isAllowed = window.AUTH_CONFIG && window.AUTH_CONFIG.allowedUsers.includes(username);
+                console.log('User allowed:', isAllowed);
+                
+                if (isAllowed) {
+                    alert(`用户 ${username} 在允许列表中，可以登录`);
+                } else {
+                    alert(`用户 ${username} 不在允许列表中，无法登录`);
+                }
+            }
+        }
+        
+        // 添加测试用户
+        function addTestUser() {
+            const username = prompt('请输入要添加的GitHub用户名:');
+            if (username) {
+                console.log('Adding test user:', username);
+                
+                if (!window.AUTH_CONFIG.allowedUsers) {
+                    window.AUTH_CONFIG.allowedUsers = [];
+                }
+                
+                if (!window.AUTH_CONFIG.allowedUsers.includes(username)) {
+                    window.AUTH_CONFIG.allowedUsers.push(username);
+                    
+                    // 保存配置
+                    localStorage.setItem('fl510_docs_config', JSON.stringify(window.AUTH_CONFIG));
+                    console.log('User added and config saved');
+                    
+                    // 通知认证系统配置已更新
+                    if (window.githubAuth) {
+                        window.githubAuth.config.allowedUsers = window.AUTH_CONFIG.allowedUsers;
+                    }
+                    
+                    // 触发配置更新事件
+                    window.dispatchEvent(new CustomEvent('configUpdated', {
+                        detail: { config: window.AUTH_CONFIG }
+                    }));
+                    
+                    alert(`用户 ${username} 已添加`);
+                    refreshConfig();
+                } else {
+                    alert(`用户 ${username} 已存在`);
+                }
+            }
+        }
+        
+        // 清除配置
+        function clearConfig() {
+            if (confirm('确定要清除所有配置吗？')) {
+                localStorage.removeItem('fl510_docs_config');
+                console.log('Configuration cleared');
+                alert('配置已清除');
+                refreshConfig();
+            }
+        }
+        
+        // 页面加载时自动刷新配置
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(refreshConfig, 1000);
+        });
+    </script>
+</body>
+</html>

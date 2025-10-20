@@ -5,6 +5,7 @@ class GitHubAuth {
     this.user = null;
     this.isAuthenticated = false;
     this.isAdmin = false;
+    this.loadSavedConfig();
     this.init();
   }
 
@@ -12,6 +13,48 @@ class GitHubAuth {
     this.checkAuthStatus();
     this.setupAuthCheck();
     this.handleAuthCallback();
+    this.setupConfigListener();
+  }
+
+  // 设置配置更新监听器
+  setupConfigListener() {
+    window.addEventListener('configUpdated', (event) => {
+      console.log('Config updated event received:', event.detail);
+      if (event.detail && event.detail.config) {
+        this.config.allowedUsers = event.detail.config.allowedUsers || this.config.allowedUsers;
+        this.config.adminUsers = event.detail.config.adminUsers || this.config.adminUsers;
+        console.log('Updated config from event:', this.config);
+      }
+    });
+  }
+
+  // 加载保存的配置
+  loadSavedConfig() {
+    const savedConfig = localStorage.getItem('fl510_docs_config');
+    if (savedConfig) {
+      try {
+        const parsedConfig = JSON.parse(savedConfig);
+        console.log('Loading saved config:', parsedConfig);
+        
+        // 合并保存的配置到当前配置
+        if (parsedConfig.allowedUsers) {
+          this.config.allowedUsers = parsedConfig.allowedUsers;
+          console.log('Updated allowed users:', this.config.allowedUsers);
+        }
+        if (parsedConfig.adminUsers) {
+          this.config.adminUsers = parsedConfig.adminUsers;
+          console.log('Updated admin users:', this.config.adminUsers);
+        }
+        
+        // 同时更新全局配置
+        if (window.AUTH_CONFIG) {
+          window.AUTH_CONFIG.allowedUsers = this.config.allowedUsers;
+          window.AUTH_CONFIG.adminUsers = this.config.adminUsers;
+        }
+      } catch (error) {
+        console.error('Error loading saved config:', error);
+      }
+    }
   }
 
   // 检查当前认证状态
@@ -246,6 +289,10 @@ class GitHubAuth {
     this.user = user;
     this.isAuthenticated = true;
     this.isAdmin = this.config.adminUsers.includes(user.login);
+    
+    console.log('Authentication successful for:', user.login);
+    console.log('Is admin:', this.isAdmin);
+    console.log('Admin users:', this.config.adminUsers);
 
     // 清理URL参数
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -255,13 +302,20 @@ class GitHubAuth {
 
   // 检查用户是否被允许访问
   isUserAllowed(user) {
+    console.log('Checking if user is allowed:', user.login);
+    console.log('Current allowed users:', this.config.allowedUsers);
+    
     // 检查用户是否在允许列表中
-    if (this.config.allowedUsers.includes(user.login)) {
+    const isAllowed = this.config.allowedUsers.includes(user.login);
+    console.log('User allowed:', isAllowed);
+    
+    if (isAllowed) {
       return true;
     }
 
     // 检查用户是否属于允许的组织（需要额外的API调用）
     // 这里简化处理，只检查用户名列表
+    console.log('User not in allowed list');
     return false;
   }
 
