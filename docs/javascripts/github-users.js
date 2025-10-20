@@ -387,3 +387,18 @@ window.testAddUser = function() {
     console.log('Manager not found');
   }
 };
+
+// 添加手动测试函数
+window.manualTest = function() {
+  console.log('Manual test started');
+  const input = document.getElementById('github-new-username');
+  console.log('Input element:', input);
+  if (input) {
+    console.log('Input value:', input.value);
+    input.value = 'testuser';
+    console.log('Set input value to testuser');
+    window.testAddUser();
+  } else {
+    console.log('Input element not found');
+  }
+};
