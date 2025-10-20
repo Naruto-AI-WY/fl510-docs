@@ -55,6 +55,7 @@ class GitHubAuth {
         console.log('Page content changed, recreating user info');
         setTimeout(() => {
           this.createUserInfo();
+          this.forceRepositionUserInfo();
         }, 100);
       }
     });
@@ -71,6 +72,7 @@ class GitHubAuth {
         console.log('Page navigation detected, recreating user info');
         setTimeout(() => {
           this.createUserInfo();
+          this.forceRepositionUserInfo();
         }, 100);
       }
     });
@@ -495,6 +497,21 @@ class GitHubAuth {
     setInterval(() => {
       this.checkAuthStatus();
     }, this.config.authCheckInterval);
+    
+    // 定期检查用户信息位置
+    setInterval(() => {
+      if (this.isAuthenticated) {
+        const userInfo = document.getElementById('user-info');
+        if (userInfo) {
+          const rect = userInfo.getBoundingClientRect();
+          // 检查是否在正确位置（右上角）
+          if (rect.top > 50 || rect.left < window.innerWidth - 200) {
+            console.log('User info not in correct position, repositioning...');
+            this.forceRepositionUserInfo();
+          }
+        }
+      }
+    }, 5000); // 每5秒检查一次
   }
 
   // 添加认证相关样式
@@ -603,7 +620,7 @@ class GitHubAuth {
         position: fixed !important;
         top: 0 !important;
         right: 0 !important;
-        z-index: 1000 !important;
+        z-index: 9999 !important;
         background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(10px) !important;
         border: 1px solid #e1e4e8 !important;
@@ -615,6 +632,15 @@ class GitHubAuth {
         max-width: none !important;
         width: auto !important;
         height: auto !important;
+        left: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        float: none !important;
+        clear: none !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
       }
 
       #user-info:hover {
@@ -623,9 +649,21 @@ class GitHubAuth {
       }
 
       .user-info-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-direction: row !important;
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
+        float: none !important;
+        clear: none !important;
       }
 
       .user-avatar img {
@@ -901,9 +939,33 @@ window.addEventListener('load', () => {
     // 页面完全加载后，重新创建用户信息以确保一致性
     setTimeout(() => {
       window.githubAuth.createUserInfo();
+      // 强制重新定位
+      window.githubAuth.forceRepositionUserInfo();
     }, 200);
   }
 });
+
+// 添加强制重新定位方法
+GitHubAuth.prototype.forceRepositionUserInfo = function() {
+  const userInfo = document.getElementById('user-info');
+  if (userInfo) {
+    // 强制重置所有可能影响位置的样式
+    userInfo.style.position = 'fixed';
+    userInfo.style.top = '0';
+    userInfo.style.right = '0';
+    userInfo.style.left = 'auto';
+    userInfo.style.bottom = 'auto';
+    userInfo.style.zIndex = '9999';
+    userInfo.style.transform = 'none';
+    userInfo.style.float = 'none';
+    userInfo.style.clear = 'none';
+    userInfo.style.margin = '0';
+    userInfo.style.width = 'auto';
+    userInfo.style.height = 'auto';
+    
+    console.log('Force repositioned user info to top-right');
+  }
+};
 
 // 添加全局认证状态检查
 window.checkAuthStatus = function() {
