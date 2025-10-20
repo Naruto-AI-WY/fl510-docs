@@ -255,10 +255,33 @@ class GitHubUsersManager {
 
   // 添加用户
   async addUser() {
+    console.log('addUser called');
+    
     // 尝试多个可能的输入框ID
     let usernameInput = document.getElementById('github-new-username') || 
                        document.getElementById('new-username');
+    
+    // 如果还是找不到，尝试查找所有输入框
+    if (!usernameInput) {
+      const allInputs = document.querySelectorAll('input[type="text"]');
+      console.log('All text inputs found:', allInputs);
+      for (let input of allInputs) {
+        if (input.placeholder && input.placeholder.includes('GitHub用户名')) {
+          usernameInput = input;
+          console.log('Found input by placeholder:', input);
+          break;
+        }
+      }
+    }
+    
+    console.log('Looking for input elements:');
+    console.log('github-new-username:', document.getElementById('github-new-username'));
+    console.log('new-username:', document.getElementById('new-username'));
+    console.log('Found input:', usernameInput);
+    
     const username = usernameInput ? usernameInput.value.trim() : '';
+    
+    console.log('Username value:', username);
     
     if (!username) {
       alert('请输入GitHub用户名');
