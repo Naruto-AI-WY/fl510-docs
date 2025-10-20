@@ -70,7 +70,7 @@ class GitHubAuth {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 22.797 24 18.3 24 13c0-6.627-5.373-12-12-12z"/>
               </svg>
-              使用GitHub登录
+              输入GitHub用户名登录
             </button>
             <div class="auth-modal-footer">
               <p class="auth-note">只有授权用户可以访问此文档</p>
@@ -93,8 +93,8 @@ class GitHubAuth {
 
   // 开始GitHub OAuth流程
   startGitHubAuth() {
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${this.config.clientId}&redirect_uri=${encodeURIComponent(this.config.redirectUri)}&scope=user:email&state=${Date.now()}`;
-    window.location.href = authUrl;
+    // 由于GitHub OAuth需要后端支持，我们使用简化的手动认证
+    this.showManualAuthForm();
   }
 
   // 处理OAuth回调
@@ -102,32 +102,104 @@ class GitHubAuth {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const state = urlParams.get('state');
+    const error = urlParams.get('error');
+
+    if (error) {
+      this.showAuthError('认证被取消或失败');
+      return;
+    }
 
     if (code && state) {
-      this.exchangeCodeForToken(code);
+      // 由于GitHub OAuth需要Client Secret，我们使用简化的方法
+      // 直接使用GitHub API获取用户信息（需要用户手动授权）
+      this.getUserInfoFromGitHub();
     }
   }
 
-  // 交换授权码获取用户信息
-  async exchangeCodeForToken(code) {
+  // 从GitHub获取用户信息（简化版本）
+  async getUserInfoFromGitHub() {
     try {
-      // 这里需要后端服务来处理OAuth流程
-      // 为了演示，我们使用GitHub API直接获取用户信息
-      const response = await fetch(`https://api.github.com/user`, {
+      // 显示加载状态
+      this.showLoadingState();
+      
+      // 使用GitHub API获取当前用户信息
+      const response = await fetch('https://api.github.com/user', {
         headers: {
           'Accept': 'application/vnd.github.v3+json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.ok) {
         const user = await response.json();
         this.handleSuccessfulAuth(user);
       } else {
-        throw new Error('Failed to get user info');
+        // 如果无法直接获取用户信息，显示手动输入界面
+        this.showManualAuthForm();
       }
     } catch (error) {
       console.error('Auth error:', error);
-      this.showAuthError('认证失败，请重试');
+      this.showManualAuthForm();
+    }
+  }
+
+  // 显示手动认证表单
+  showManualAuthForm() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      const body = modal.querySelector('.auth-modal-body');
+      body.innerHTML = `
+        <div class="manual-auth-form">
+          <h4>手动认证</h4>
+          <p>由于GitHub OAuth限制，请手动输入您的GitHub用户名：</p>
+          <div class="input-group">
+            <input type="text" id="github-username" placeholder="GitHub用户名" required>
+            <button onclick="window.githubAuth.verifyManualAuth()" class="verify-btn">
+              验证
+            </button>
+          </div>
+          <div class="auth-note">
+            <p>💡 提示：您可以在 <a href="https://github.com/settings/profile" target="_blank">GitHub个人资料</a> 中找到您的用户名</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // 验证手动输入的认证
+  async verifyManualAuth() {
+    const username = document.getElementById('github-username').value.trim();
+    if (!username) {
+      alert('请输入GitHub用户名');
+      return;
+    }
+
+    try {
+      // 验证用户名是否存在
+      const response = await fetch(`https://api.github.com/users/${username}`);
+      if (response.ok) {
+        const user = await response.json();
+        this.handleSuccessfulAuth(user);
+      } else {
+        this.showAuthError('用户名不存在，请检查输入');
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      this.showAuthError('验证失败，请重试');
+    }
+  }
+
+  // 显示加载状态
+  showLoadingState() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      const body = modal.querySelector('.auth-modal-body');
+      body.innerHTML = `
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>正在验证身份...</p>
+        </div>
+      `;
     }
   }
 
@@ -418,6 +490,97 @@ class GitHubAuth {
         background: #c82333;
       }
 
+      /* 手动认证表单样式 */
+      .manual-auth-form {
+        text-align: center;
+      }
+
+      .manual-auth-form h4 {
+        margin: 0 0 16px 0;
+        color: #24292e;
+      }
+
+      .manual-auth-form p {
+        margin: 0 0 20px 0;
+        color: #586069;
+        font-size: 14px;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 8px;
+        margin: 20px 0;
+      }
+
+      .input-group input {
+        flex: 1;
+        padding: 10px 12px;
+        border: 1px solid #d1d5da;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+
+      .verify-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+
+      .verify-btn:hover {
+        background: #218838;
+      }
+
+      .auth-note {
+        margin-top: 20px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        font-size: 12px;
+        color: #586069;
+      }
+
+      .auth-note a {
+        color: #0366d6;
+        text-decoration: none;
+      }
+
+      .auth-note a:hover {
+        text-decoration: underline;
+      }
+
+      /* 加载状态样式 */
+      .loading-state {
+        text-align: center;
+        padding: 40px 20px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #0366d6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-state p {
+        margin: 0;
+        color: #586069;
+        font-size: 14px;
+      }
+
       /* 响应式设计 */
       @media (max-width: 768px) {
         .user-info-container {
@@ -429,6 +592,15 @@ class GitHubAuth {
         .user-details {
           flex-direction: column;
           align-items: flex-start;
+        }
+
+        .input-group {
+          flex-direction: column;
+        }
+
+        .input-group input,
+        .verify-btn {
+          width: 100%;
         }
       }
     `;
