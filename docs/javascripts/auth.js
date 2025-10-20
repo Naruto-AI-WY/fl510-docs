@@ -494,7 +494,7 @@ class GitHubAuth {
 
       if (response.ok) {
         const user = await response.json();
-        this.handleSuccessfulAuth(user);
+        await this.handleSuccessfulAuth(user);
       } else {
         // 如果无法直接获取用户信息，显示手动输入界面
         this.showManualAuthForm();
@@ -544,7 +544,7 @@ class GitHubAuth {
         console.log('GitHub API response:', user);
         console.log('Allowed users:', this.config.allowedUsers);
         console.log('User login:', user.login);
-        this.handleSuccessfulAuth(user);
+        await this.handleSuccessfulAuth(user);
       } else {
         console.error('GitHub API error:', response.status, response.statusText);
         this.showAuthError('用户名不存在，请检查输入');
@@ -570,9 +570,9 @@ class GitHubAuth {
   }
 
   // 处理成功认证
-  handleSuccessfulAuth(user) {
-    // 检查用户权限
-    if (!this.isUserAllowed(user)) {
+  async handleSuccessfulAuth(user) {
+    // 检查用户权限（现在会先同步最新配置）
+    if (!(await this.isUserAllowed(user))) {
       this.showAuthError('您没有访问权限');
       return;
     }
@@ -599,9 +599,26 @@ class GitHubAuth {
   }
 
   // 检查用户是否被允许访问
-  isUserAllowed(user) {
+  async isUserAllowed(user) {
     console.log('Checking if user is allowed:', user.login);
     console.log('Current allowed users:', this.config.allowedUsers);
+    
+    // 登录验证前强制同步最新配置，确保权限检查的准确性
+    if (window.githubUsersManager) {
+      console.log('Syncing latest config before auth check...');
+      try {
+        await window.githubUsersManager.syncUsersFromGitHub();
+        // 同步后重新获取最新配置
+        const latestConfig = window.githubUsersManager.getCurrentConfig();
+        if (latestConfig && latestConfig.allowedUsers) {
+          this.config.allowedUsers = latestConfig.allowedUsers;
+          console.log('Updated allowed users after sync:', this.config.allowedUsers);
+        }
+      } catch (error) {
+        console.warn('Failed to sync config during auth check:', error);
+        // 同步失败时继续使用当前配置
+      }
+    }
     
     // 检查用户是否在允许列表中
     const isAllowed = this.config.allowedUsers.includes(user.login);
