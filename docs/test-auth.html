@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 FL-510 认证系统测试</h1>
+        
+        <div id="status" class="status info">
+            正在加载认证系统...
+        </div>
+        
+        <div class="test-section">
+            <h3>认证状态</h3>
+            <p>用户: <span id="user-info">未登录</span></p>
+            <p>权限: <span id="permission-info">无权限</span></p>
+            <p>管理员: <span id="admin-info">否</span></p>
+        </div>
+        
+        <div class="test-section">
+            <h3>测试操作</h3>
+            <button onclick="testAuth()">测试认证</button>
+            <button onclick="testLogin()">模拟登录</button>
+            <button onclick="testLogout()">退出登录</button>
+            <button onclick="checkConfig()">检查配置</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>调试信息</h3>
+            <pre id="debug-info">等待认证系统加载...</pre>
+        </div>
+    </div>
+
+    <!-- 加载认证脚本 -->
+    <script src="javascripts/auth-config.js"></script>
+    <script src="javascripts/auth.js"></script>
+    <script src="javascripts/admin.js"></script>
+    
+    <script>
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            const userEl = document.getElementById('user-info');
+            const permissionEl = document.getElementById('permission-info');
+            const adminEl = document.getElementById('admin-info');
+            const debugEl = document.getElementById('debug-info');
+            
+            if (window.githubAuth) {
+                if (window.githubAuth.isAuthenticated) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✅ 认证系统正常工作';
+                    userEl.textContent = window.githubAuth.user ? window.githubAuth.user.login : '未知';
+                    permissionEl.textContent = '有权限';
+                    adminEl.textContent = window.githubAuth.isAdmin ? '是' : '否';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '❌ 未登录';
+                    userEl.textContent = '未登录';
+                    permissionEl.textContent = '无权限';
+                    adminEl.textContent = '否';
+                }
+            } else {
+                statusEl.className = 'status error';
+                statusEl.textContent = '❌ 认证系统未加载';
+            }
+            
+            // 更新调试信息
+            debugEl.textContent = JSON.stringify({
+                authLoaded: !!window.githubAuth,
+                configLoaded: !!window.AUTH_CONFIG,
+                isAuthenticated: window.githubAuth ? window.githubAuth.isAuthenticated : false,
+                user: window.githubAuth ? window.githubAuth.user : null,
+                allowedUsers: window.AUTH_CONFIG ? window.AUTH_CONFIG.allowedUsers : null
+            }, null, 2);
+        }
+        
+        function testAuth() {
+            updateStatus();
+        }
+        
+        function testLogin() {
+            if (window.githubAuth) {
+                window.githubAuth.showLoginUI();
+            } else {
+                alert('认证系统未加载');
+            }
+        }
+        
+        function testLogout() {
+            if (window.githubAuth) {
+                window.githubAuth.logout();
+                updateStatus();
+            } else {
+                alert('认证系统未加载');
+            }
+        }
+        
+        function checkConfig() {
+            if (window.AUTH_CONFIG) {
+                alert('配置已加载:\n' + JSON.stringify(window.AUTH_CONFIG, null, 2));
+            } else {
+                alert('配置未加载');
+            }
+        }
+        
+        // 页面加载完成后检查状态
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateStatus, 1000);
+        });
+        
+        // 定期更新状态
+        setInterval(updateStatus, 2000);
+    </script>
+</body>
+</html>
