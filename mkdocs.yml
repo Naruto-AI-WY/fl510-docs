@@ -34,12 +34,12 @@ markdown_extensions:
   - pymdownx.tabbed:
       alternate_style: true
 extra_javascript:
-  - javascripts/mathjax.js
+  - javascripts/mathjax.js?v=2024-10-20
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - javascripts/auth-config.js
-  - javascripts/auth.js
-  - javascripts/admin.js
-  - javascripts/github-users.js
+  - javascripts/auth-config.js?v=2024-10-20
+  - javascripts/auth.js?v=2024-10-20
+  - javascripts/admin.js?v=2024-10-20
+  - javascripts/github-users.js?v=2024-10-20
 nav:
   - 认证测试: test-auth.html
   - 认证调试: debug-auth.html
