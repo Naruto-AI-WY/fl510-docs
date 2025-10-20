@@ -26,7 +26,7 @@ class GitHubUsersManager {
 
   // 设置跨标签页同步
   setupCrossTabSync() {
-    // 监听localStorage变化
+    // 监听localStorage变化（只在其他标签页触发）
     window.addEventListener('storage', (e) => {
       if (e.key === 'fl510_docs_config' && e.newValue) {
         console.log('Config updated in another tab, applying...');
@@ -48,6 +48,30 @@ class GitHubUsersManager {
           this.applyConfig(event.data.config);
         }
       };
+    }
+
+    // 添加定期检查机制，确保配置同步
+    setInterval(() => {
+      this.checkForConfigUpdates();
+    }, 2000); // 每2秒检查一次
+  }
+
+  // 检查配置更新
+  checkForConfigUpdates() {
+    const currentConfig = this.getLocalConfig();
+    if (currentConfig && currentConfig.allowedUsers) {
+      // 检查全局配置是否与本地配置一致
+      if (window.AUTH_CONFIG && window.AUTH_CONFIG.allowedUsers) {
+        const globalUsers = window.AUTH_CONFIG.allowedUsers;
+        const localUsers = currentConfig.allowedUsers;
+        
+        // 如果用户数量不同，说明配置不同步
+        if (globalUsers.length !== localUsers.length || 
+            !globalUsers.every(user => localUsers.includes(user))) {
+          console.log('Config mismatch detected, syncing...');
+          this.applyConfig(currentConfig);
+        }
+      }
     }
   }
 
@@ -269,10 +293,13 @@ class GitHubUsersManager {
         
         // 通过BroadcastChannel通知其他标签页
         if (this.broadcastChannel) {
+          console.log('Sending broadcast message to other tabs...');
           this.broadcastChannel.postMessage({
             type: 'user-update',
             config: currentConfig
           });
+        } else {
+          console.log('BroadcastChannel not available');
         }
         
         console.log(`User ${username} added to config:`, currentConfig);
@@ -310,10 +337,13 @@ class GitHubUsersManager {
           
           // 通过BroadcastChannel通知其他标签页
           if (this.broadcastChannel) {
+            console.log('Sending broadcast message to other tabs...');
             this.broadcastChannel.postMessage({
               type: 'user-update',
               config: currentConfig
             });
+          } else {
+            console.log('BroadcastChannel not available');
           }
           
           console.log(`User ${username} removed from config:`, currentConfig);
@@ -604,10 +634,32 @@ window.debugSyncStatus = function() {
   console.log('GitHub Token:', localStorage.getItem('github_sync_token') ? '已设置' : '未设置');
   console.log('Gist ID:', localStorage.getItem('fl510_gist_id') || '未设置');
   console.log('本地配置:', localStorage.getItem('fl510_docs_config'));
+  console.log('BroadcastChannel支持:', typeof BroadcastChannel !== 'undefined');
+  console.log('当前AUTH_CONFIG:', window.AUTH_CONFIG);
   
   if (window.githubUsersManager) {
     window.githubUsersManager.getConfigFromGist().then(gistConfig => {
       console.log('Gist配置:', gistConfig);
     });
+  }
+};
+
+// 手动触发跨标签页同步
+window.manualSync = function() {
+  if (window.githubUsersManager) {
+    const config = window.githubUsersManager.getLocalConfig();
+    if (config) {
+      console.log('手动触发同步，配置:', config);
+      window.githubUsersManager.applyConfig(config);
+      
+      // 发送广播消息
+      if (window.githubUsersManager.broadcastChannel) {
+        window.githubUsersManager.broadcastChannel.postMessage({
+          type: 'user-update',
+          config: config
+        });
+        console.log('广播消息已发送');
+      }
+    }
   }
 };
