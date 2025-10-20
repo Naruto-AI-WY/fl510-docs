@@ -153,7 +153,7 @@ class AdminPanel {
         <h4>👥 用户权限管理</h4>
         <div class="user-list">
           <div class="user-item">
-            <span class="user-name">当前用户: ${this.auth.user.login}</span>
+            <span class="user-name">当前登录：${this.auth.user.login}</span>
             <span class="user-role">管理员</span>
           </div>
         </div>
@@ -166,7 +166,7 @@ class AdminPanel {
           <p class="help-text">💡 输入GitHub用户名，系统会自动验证用户是否存在</p>
         </div>
         <div class="authorized-users">
-          <h5>授权用户列表 (${window.AUTH_CONFIG.allowedUsers.length} 个用户)</h5>
+          <h5>授权用户列表 (${(window.AUTH_CONFIG.allowedUsers || []).filter(u => u !== this.auth.user.login).length} 个用户)</h5>
           <div id="authorized-users-list">
             ${this.getAuthorizedUsersList()}
           </div>
@@ -259,7 +259,8 @@ class AdminPanel {
 
   // 获取授权用户列表
   getAuthorizedUsersList() {
-    const users = window.AUTH_CONFIG.allowedUsers || [];
+    const current = this.auth && this.auth.user ? this.auth.user.login : null;
+    const users = (window.AUTH_CONFIG.allowedUsers || []).filter(u => u !== current);
     console.log('Getting authorized users list:', users);
     
     if (users.length === 0) {
@@ -378,7 +379,9 @@ class AdminPanel {
     // 同步更新标题数量
     const header = document.querySelector('.authorized-users h5');
     if (header && window.AUTH_CONFIG && Array.isArray(window.AUTH_CONFIG.allowedUsers)) {
-      header.textContent = `授权用户列表 (${window.AUTH_CONFIG.allowedUsers.length} 个用户)`;
+      const current = this.auth && this.auth.user ? this.auth.user.login : null;
+      const count = (window.AUTH_CONFIG.allowedUsers || []).filter(u => u !== current).length;
+      header.textContent = `授权用户列表 (${count} 个用户)`;
     }
   }
 
