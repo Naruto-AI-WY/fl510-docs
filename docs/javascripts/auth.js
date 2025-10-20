@@ -117,30 +117,17 @@ class GitHubAuth {
   // 从服务器加载配置
   async loadConfigFromServer() {
     try {
-      // 等待配置同步系统初始化
-      let retries = 0;
-      while (!window.configSync || !window.configSync.initialized) {
-        if (retries > 10) {
-          console.log('ConfigSync initialization timeout');
-          return null;
+      // 使用GitHub用户管理器加载配置
+      if (window.githubUsersManager) {
+        console.log('Loading config from GitHub...');
+        const success = await window.githubUsersManager.syncUsersFromGitHub();
+        if (success) {
+          console.log('Config loaded from GitHub successfully');
+          return true;
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
-        retries++;
       }
       
-      if (!window.configSync.githubToken) {
-        console.log('No GitHub token configured');
-        return null;
-      }
-
-      console.log('Loading config from server...');
-      const cloudConfig = await window.configSync.loadConfig();
-      if (cloudConfig && (cloudConfig.allowedUsers || cloudConfig.adminUsers)) {
-        console.log('Server config loaded successfully:', cloudConfig);
-        return cloudConfig;
-      }
-      
-      console.log('No server config found');
+      console.log('No GitHub config found');
       return null;
     } catch (error) {
       console.error('Failed to load config from server:', error);
@@ -169,23 +156,17 @@ class GitHubAuth {
   // 同步配置到服务器
   async syncConfigToServer() {
     try {
-      // 等待配置同步系统初始化
-      let retries = 0;
-      while (!window.configSync || !window.configSync.initialized) {
-        if (retries > 10) {
-          console.log('ConfigSync initialization timeout for sync');
-          return;
+      // 使用GitHub用户管理器同步配置
+      if (window.githubUsersManager) {
+        console.log('Syncing config to GitHub...');
+        const success = await window.githubUsersManager.syncUsersFromGitHub();
+        if (success) {
+          console.log('Config synced to GitHub successfully');
+        } else {
+          console.log('Failed to sync config to GitHub');
         }
-        await new Promise(resolve => setTimeout(resolve, 100));
-        retries++;
-      }
-      
-      if (window.configSync && window.configSync.syncConfig && window.configSync.githubToken) {
-        console.log('Syncing config to server...');
-        await window.configSync.syncConfig();
-        console.log('Config synced to server successfully');
       } else {
-        console.log('No server sync available');
+        console.log('No GitHub sync available');
       }
     } catch (error) {
       console.error('Failed to sync config to server:', error);
@@ -790,8 +771,8 @@ class GitHubAuth {
           const rect = userInfo.getBoundingClientRect();
           const computedStyle = window.getComputedStyle(userInfo);
           
-          // 检查位置（修复逻辑错误）
-          if (rect.top > 50 || rect.left < window.innerWidth - 200) {
+          // 检查位置（修复逻辑错误 - 只有在位置明显错误时才重新定位）
+          if (rect.top > 100 || rect.left < window.innerWidth - 300) {
             console.log('User info not in correct position, repositioning...');
             this.forceRepositionUserInfo();
           }
@@ -819,7 +800,7 @@ class GitHubAuth {
           }
         }
       }
-    }, 5000); // 每5秒检查一次，避免无限循环
+    }, 15000); // 每15秒检查一次，避免无限循环
   }
 
   // 添加认证相关样式
