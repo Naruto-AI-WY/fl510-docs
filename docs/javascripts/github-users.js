@@ -80,7 +80,17 @@ class GitHubUsersManager {
     try {
       console.log('Syncing users from GitHub...');
       
-      // 首先尝试从GitHub Gist获取配置
+      // 首先尝试从GitHub仓库获取配置（最可靠的方法）
+      const repoConfig = await this.getConfigFromGitHub();
+      if (repoConfig) {
+        console.log('Using GitHub repo config:', repoConfig);
+        this.applyConfig(repoConfig);
+        // 同时保存到本地存储，确保下次加载更快
+        localStorage.setItem('fl510_docs_config', JSON.stringify(repoConfig));
+        return true;
+      }
+      
+      // 如果仓库没有配置，尝试从GitHub Gist获取配置
       const gistConfig = await this.getConfigFromGist();
       if (gistConfig) {
         console.log('Using Gist config:', gistConfig);
@@ -105,7 +115,7 @@ class GitHubUsersManager {
         }
       }
       
-      // 如果Gist没有配置，检查本地配置
+      // 如果都没有，检查本地配置
       const localConfig = this.getLocalConfig();
       if (localConfig && localConfig.allowedUsers && localConfig.allowedUsers.length > 0) {
         console.log('Using local config:', localConfig);
@@ -139,19 +149,26 @@ class GitHubUsersManager {
         return null;
       }
 
+      // 尝试访问公开的Gist（不需要Token）
       const response = await fetch(`https://api.github.com/gists/${gistId}`);
       if (response.ok) {
         const gist = await response.json();
         const configFile = gist.files['fl510-users-config.json'];
         if (configFile) {
           const content = configFile.content;
+          console.log('Successfully retrieved config from Gist:', content);
           return JSON.parse(content);
         }
+      } else {
+        console.log('Gist not accessible, trying alternative method...');
+        // 如果Gist不可访问，尝试从GitHub仓库获取配置
+        return await this.getConfigFromGitHub();
       }
       return null;
     } catch (error) {
       console.error('Failed to get config from Gist:', error);
-      return null;
+      // 失败时尝试从GitHub仓库获取
+      return await this.getConfigFromGitHub();
     }
   }
 
@@ -292,18 +309,58 @@ class GitHubUsersManager {
     }
   }
 
+  // 保存配置到GitHub仓库
+  async saveConfigToGitHub(config) {
+    try {
+      const githubToken = localStorage.getItem('github_sync_token');
+      if (!githubToken) {
+        console.log('No GitHub token, cannot save to repository');
+        return false;
+      }
+
+      const content = btoa(JSON.stringify(config, null, 2)); // 编码为base64
+      const sha = await this.getFileSha(this.configFile);
+      
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${githubToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: 'Update user configuration',
+          content: content,
+          sha: sha
+        })
+      });
+
+      if (response.ok) {
+        console.log('Config saved to GitHub repository successfully');
+        return true;
+      } else {
+        console.error('Failed to save config to GitHub repository:', response.statusText);
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to save config to GitHub repository:', error);
+      return false;
+    }
+  }
+
   // 从GitHub获取配置（保留原方法作为备用）
   async getConfigFromGitHub() {
     try {
       // 使用GitHub API获取文件内容
-      const response = await fetch(`https://api.github.com/repos/${this.repoName}/contents/${this.configFile}`);
+      const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`);
       
       if (response.ok) {
         const data = await response.json();
         const content = atob(data.content); // 解码base64内容
+        console.log('Successfully retrieved config from GitHub repo:', content);
         return JSON.parse(content);
       } else if (response.status === 404) {
         // 文件不存在，返回null
+        console.log('Config file not found in GitHub repo');
         return null;
       } else {
         throw new Error(`GitHub API error: ${response.status}`);
@@ -380,7 +437,13 @@ class GitHubUsersManager {
         // 保存到本地存储
         localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
         
-        // 保存到GitHub Gist
+        // 保存到GitHub仓库（主要存储）
+        const repoSuccess = await this.saveConfigToGitHub(currentConfig);
+        if (repoSuccess) {
+          console.log('Config saved to GitHub repository');
+        }
+        
+        // 保存到GitHub Gist（备用存储）
         await this.saveConfigToGist(currentConfig);
         
         // 通过BroadcastChannel通知其他标签页
@@ -424,7 +487,13 @@ class GitHubUsersManager {
           // 保存到本地存储
           localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
           
-          // 保存到GitHub Gist
+          // 保存到GitHub仓库（主要存储）
+          const repoSuccess = await this.saveConfigToGitHub(currentConfig);
+          if (repoSuccess) {
+            console.log('Config updated in GitHub repository');
+          }
+          
+          // 保存到GitHub Gist（备用存储）
           await this.saveConfigToGist(currentConfig);
           
           // 通过BroadcastChannel通知其他标签页
