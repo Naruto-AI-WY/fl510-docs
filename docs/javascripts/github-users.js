@@ -82,11 +82,7 @@ class GitHubUsersManager {
         try {
           const incoming = JSON.parse(e.newValue);
           const merged = this.mergeConfigs(this.getCurrentConfig(), incoming);
-          const applied = this.maybeApplyConfig(merged);
-          // 若可用且应用成功，尝试向仓库/Gist 汇聚最新配置
-          if (applied) {
-            this.tryConvergeToServer(merged);
-          }
+          this.maybeApplyConfig(merged);
         } catch (error) {
           console.error('Failed to parse config from storage:', error);
         }
@@ -100,10 +96,7 @@ class GitHubUsersManager {
         if (event.data.type === 'user-update') {
           console.log('User update received via broadcast:', event.data.config);
           const merged = this.mergeConfigs(this.getCurrentConfig(), event.data.config);
-          const applied = this.maybeApplyConfig(merged);
-          if (applied) {
-            this.tryConvergeToServer(merged);
-          }
+          this.maybeApplyConfig(merged);
         }
       };
     }
@@ -147,8 +140,7 @@ class GitHubUsersManager {
         console.log('Using GitHub repo config:', finalCfg);
         this.applyConfig(finalCfg);
         localStorage.setItem('fl510_docs_config', JSON.stringify(finalCfg));
-        // 若与仓库不同步，且有Token，则推回仓库/Gist 以达成收敛
-        this.tryConvergeToServer(finalCfg);
+        // 被动刷新不推回仓库，只在增删时写回
         return true;
       }
       
