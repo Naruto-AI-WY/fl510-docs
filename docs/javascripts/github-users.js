@@ -227,7 +227,8 @@ class GitHubUsersManager {
         
         return true;
       } else {
-        console.error('Failed to save to Gist:', response.statusText);
+        const errorText = await response.text();
+        console.error('Failed to save to Gist:', response.status, response.statusText, errorText);
         return false;
       }
     } catch (error) {
@@ -328,24 +329,31 @@ class GitHubUsersManager {
       const content = btoa(JSON.stringify(config, null, 2)); // 编码为base64
       const sha = await this.getFileSha(this.configFile);
       
+      const requestBody = {
+        message: 'Update user configuration',
+        content: content
+      };
+      
+      // 如果文件已存在，需要提供SHA
+      if (sha) {
+        requestBody.sha = sha;
+      }
+      
       const response = await fetch(`https://api.github.com/repos/${this.repoOwner}/${this.repoName}/contents/${this.configFile}`, {
         method: 'PUT',
         headers: {
           'Authorization': `token ${githubToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          message: 'Update user configuration',
-          content: content,
-          sha: sha
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (response.ok) {
         console.log('Config saved to GitHub repository successfully');
         return true;
       } else {
-        console.error('Failed to save config to GitHub repository:', response.statusText);
+        const errorText = await response.text();
+        console.error('Failed to save config to GitHub repository:', response.status, response.statusText, errorText);
         return false;
       }
     } catch (error) {
