@@ -14,6 +14,7 @@ class GitHubAuth {
     this.setupAuthCheck();
     this.handleAuthCallback();
     this.setupConfigListener();
+    this.setupPageNavigationListener();
   }
 
   // 设置配置更新监听器
@@ -24,6 +25,53 @@ class GitHubAuth {
         this.config.allowedUsers = event.detail.config.allowedUsers || this.config.allowedUsers;
         this.config.adminUsers = event.detail.config.adminUsers || this.config.adminUsers;
         console.log('Updated config from event:', this.config);
+      }
+    });
+  }
+
+  // 设置页面跳转监听器
+  setupPageNavigationListener() {
+    // 监听页面变化（适用于单页应用或动态内容加载）
+    const observer = new MutationObserver((mutations) => {
+      let shouldRecreate = false;
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          // 检查是否有新的主要内容被添加
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) { // Element node
+              if (node.classList && (
+                node.classList.contains('md-main') ||
+                node.classList.contains('md-content') ||
+                node.classList.contains('md-container')
+              )) {
+                shouldRecreate = true;
+              }
+            }
+          });
+        }
+      });
+      
+      if (shouldRecreate && this.isAuthenticated) {
+        console.log('Page content changed, recreating user info');
+        setTimeout(() => {
+          this.createUserInfo();
+        }, 100);
+      }
+    });
+
+    // 开始观察body的变化
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // 监听popstate事件（浏览器前进/后退）
+    window.addEventListener('popstate', () => {
+      if (this.isAuthenticated) {
+        console.log('Page navigation detected, recreating user info');
+        setTimeout(() => {
+          this.createUserInfo();
+        }, 100);
       }
     });
   }
@@ -361,46 +409,9 @@ class GitHubAuth {
       </div>
     `;
 
-    // 尝试多个可能的选择器来找到合适的位置插入用户信息
-    let targetElement = null;
-    
-    // 尝试不同的选择器，优先选择更合适的位置
-    const selectors = [
-      '.md-header',
-      '.md-header__inner',
-      '.md-header__title',
-      '.md-nav',
-      '.md-nav__title',
-      '.md-container',
-      '.md-main__inner',
-      'main',
-      'body'
-    ];
-    
-    for (const selector of selectors) {
-      const element = document.querySelector(selector);
-      if (element) {
-        targetElement = element;
-        break;
-      }
-    }
-    
-    if (targetElement) {
-      // 如果是header相关元素，插入到合适位置
-      if (targetElement.classList.contains('md-header') || targetElement.classList.contains('md-header__inner')) {
-        // 插入到header内部
-        targetElement.appendChild(userInfo);
-      } else if (targetElement.classList.contains('md-nav')) {
-        // 插入到导航栏
-        targetElement.insertBefore(userInfo, targetElement.firstChild);
-      } else {
-        // 其他情况，插入到第一个子元素之前
-        targetElement.insertBefore(userInfo, targetElement.firstChild);
-      }
-    } else {
-      // 如果找不到合适的容器，直接添加到body顶部
-      document.body.insertBefore(userInfo, document.body.firstChild);
-    }
+    // 统一使用固定定位，不依赖页面结构
+    // 直接添加到body，使用CSS固定定位
+    document.body.appendChild(userInfo);
 
     // 绑定退出按钮事件
     const logoutBtn = document.getElementById('logout-btn');
@@ -589,17 +600,21 @@ class GitHubAuth {
 
       /* 用户信息样式 */
       #user-info {
-        position: fixed;
-        top: 0;
-        right: 0;
-        z-index: 1000;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border: 1px solid #e1e4e8;
-        border-radius: 0 0 0 12px;
-        padding: 8px 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid #e1e4e8 !important;
+        border-radius: 0 0 0 12px !important;
+        padding: 8px 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease !important;
+        margin: 0 !important;
+        max-width: none !important;
+        width: auto !important;
+        height: auto !important;
       }
 
       #user-info:hover {
@@ -878,6 +893,16 @@ document.addEventListener('DOMContentLoaded', () => {
       window.githubAuth.checkAuthStatus();
     }
   });
+});
+
+// 监听页面完全加载后的事件
+window.addEventListener('load', () => {
+  if (window.githubAuth && window.githubAuth.isAuthenticated) {
+    // 页面完全加载后，重新创建用户信息以确保一致性
+    setTimeout(() => {
+      window.githubAuth.createUserInfo();
+    }, 200);
+  }
 });
 
 // 添加全局认证状态检查
