@@ -459,77 +459,66 @@ window.addEventListener('error', function(event) {
 
 // 立即创建占位符对象，防止未定义错误
 window.configSync = {
-  setupSync: () => {
-    console.warn('ConfigSync not yet initialized, retrying...');
-    setTimeout(() => {
-      if (window.configSync && window.configSync.setupSync !== arguments.callee) {
-        window.configSync.setupSync();
-      } else {
-        alert('配置同步功能正在初始化中，请稍后再试');
-      }
-    }, 100);
+  initialized: false,
+  setupSync: function() {
+    console.log('ConfigSync setupSync called, initialized:', this.initialized);
+    if (this.initialized && this._realSetupSync) {
+      return this._realSetupSync();
+    } else {
+      alert('配置同步功能正在初始化中，请稍后再试');
+    }
   },
-  syncConfig: () => {
-    console.warn('ConfigSync not yet initialized, retrying...');
-    setTimeout(() => {
-      if (window.configSync && window.configSync.syncConfig !== arguments.callee) {
-        window.configSync.syncConfig();
-      } else {
-        alert('配置同步功能正在初始化中，请稍后再试');
-      }
-    }, 100);
+  syncConfig: function() {
+    console.log('ConfigSync syncConfig called, initialized:', this.initialized);
+    if (this.initialized && this._realSyncConfig) {
+      return this._realSyncConfig();
+    } else {
+      alert('配置同步功能正在初始化中，请稍后再试');
+    }
   },
-  loadConfig: () => {
-    console.warn('ConfigSync not yet initialized, retrying...');
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (window.configSync && window.configSync.loadConfig !== arguments.callee) {
-          window.configSync.loadConfig().then(resolve);
-        } else {
-          resolve(null);
-        }
-      }, 100);
-    });
+  loadConfig: function() {
+    console.log('ConfigSync loadConfig called, initialized:', this.initialized);
+    if (this.initialized && this._realLoadConfig) {
+      return this._realLoadConfig();
+    } else {
+      return Promise.resolve(null);
+    }
   },
-  disableSync: () => {
-    console.warn('ConfigSync not yet initialized, retrying...');
-    setTimeout(() => {
-      if (window.configSync && window.configSync.disableSync !== arguments.callee) {
-        window.configSync.disableSync();
-      } else {
-        alert('配置同步功能正在初始化中，请稍后再试');
-      }
-    }, 100);
+  disableSync: function() {
+    console.log('ConfigSync disableSync called, initialized:', this.initialized);
+    if (this.initialized && this._realDisableSync) {
+      return this._realDisableSync();
+    } else {
+      alert('配置同步功能正在初始化中，请稍后再试');
+    }
   }
 };
 
 // 延迟初始化配置同步系统，确保DOM完全加载
 function initializeConfigSync() {
+  console.log('Initializing ConfigSync...');
+  
   if (window.configSync && window.configSync.initialized) {
+    console.log('ConfigSync already initialized');
     return; // 已经初始化过了
   }
   
   try {
+    console.log('Creating new ConfigSync instance...');
     const realConfigSync = new ConfigSync();
     
-    // 替换占位符对象，保留原有属性
-    const originalMethods = {
-      setupSync: window.configSync.setupSync,
-      syncConfig: window.configSync.syncConfig,
-      loadConfig: window.configSync.loadConfig,
-      disableSync: window.configSync.disableSync
-    };
+    // 保存真实方法到占位符对象
+    window.configSync._realSetupSync = realConfigSync.setupSync.bind(realConfigSync);
+    window.configSync._realSyncConfig = realConfigSync.syncConfig.bind(realConfigSync);
+    window.configSync._realLoadConfig = realConfigSync.loadConfig.bind(realConfigSync);
+    window.configSync._realDisableSync = realConfigSync.disableSync.bind(realConfigSync);
     
-    // 复制真实对象的所有属性和方法
+    // 复制其他属性
     Object.keys(realConfigSync).forEach(key => {
-      window.configSync[key] = realConfigSync[key];
+      if (key !== 'setupSync' && key !== 'syncConfig' && key !== 'loadConfig' && key !== 'disableSync') {
+        window.configSync[key] = realConfigSync[key];
+      }
     });
-    
-    // 确保方法正确绑定
-    window.configSync.setupSync = realConfigSync.setupSync.bind(realConfigSync);
-    window.configSync.syncConfig = realConfigSync.syncConfig.bind(realConfigSync);
-    window.configSync.loadConfig = realConfigSync.loadConfig.bind(realConfigSync);
-    window.configSync.disableSync = realConfigSync.disableSync.bind(realConfigSync);
     
     window.configSync.initialized = true;
     
