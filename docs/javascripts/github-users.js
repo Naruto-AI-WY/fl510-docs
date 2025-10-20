@@ -56,15 +56,17 @@ class GitHubUsersManager {
     try {
       console.log('Syncing users from GitHub...');
       
-      // 尝试从GitHub Gist获取配置
+      // 优先尝试从GitHub Gist获取配置
       const gistConfig = await this.getConfigFromGist();
-      if (gistConfig && gistConfig.allowedUsers && gistConfig.allowedUsers.length > 0) {
+      if (gistConfig) {
         console.log('Using Gist config:', gistConfig);
         this.applyConfig(gistConfig);
+        // 同时保存到本地存储，确保下次加载更快
+        localStorage.setItem('fl510_docs_config', JSON.stringify(gistConfig));
         return true;
       }
       
-      // 如果Gist没有配置，使用本地配置
+      // 如果Gist没有配置，检查本地配置
       const localConfig = this.getLocalConfig();
       if (localConfig && localConfig.allowedUsers && localConfig.allowedUsers.length > 0) {
         console.log('Using local config:', localConfig);
@@ -593,5 +595,19 @@ window.setupGitHubToken = function() {
     } else {
       alert('GitHub用户管理器未初始化');
     }
+  }
+};
+
+// 调试同步状态
+window.debugSyncStatus = function() {
+  console.log('=== 同步状态调试 ===');
+  console.log('GitHub Token:', localStorage.getItem('github_sync_token') ? '已设置' : '未设置');
+  console.log('Gist ID:', localStorage.getItem('fl510_gist_id') || '未设置');
+  console.log('本地配置:', localStorage.getItem('fl510_docs_config'));
+  
+  if (window.githubUsersManager) {
+    window.githubUsersManager.getConfigFromGist().then(gistConfig => {
+      console.log('Gist配置:', gistConfig);
+    });
   }
 };
