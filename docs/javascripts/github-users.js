@@ -80,8 +80,13 @@ class GitHubUsersManager {
       if (e.key === 'fl510_docs_config' && e.newValue) {
         console.log('Config updated in another tab, applying...');
         try {
-          const config = JSON.parse(e.newValue);
-          this.maybeApplyConfig(config);
+          const incoming = JSON.parse(e.newValue);
+          const merged = this.mergeConfigs(this.getCurrentConfig(), incoming);
+          const applied = this.maybeApplyConfig(merged);
+          // 若可用且应用成功，尝试向仓库/Gist 汇聚最新配置
+          if (applied) {
+            this.tryConvergeToServer(merged);
+          }
         } catch (error) {
           console.error('Failed to parse config from storage:', error);
         }
@@ -94,7 +99,11 @@ class GitHubUsersManager {
       this.broadcastChannel.onmessage = (event) => {
         if (event.data.type === 'user-update') {
           console.log('User update received via broadcast:', event.data.config);
-          this.maybeApplyConfig(event.data.config);
+          const merged = this.mergeConfigs(this.getCurrentConfig(), event.data.config);
+          const applied = this.maybeApplyConfig(merged);
+          if (applied) {
+            this.tryConvergeToServer(merged);
+          }
         }
       };
     }
@@ -133,13 +142,13 @@ class GitHubUsersManager {
       const repoConfig = await this.getConfigFromGitHub();
       if (repoConfig) {
         const current = this.getCurrentConfig();
-        // 如果本地更新更新更“新”，则合并后再应用，避免被旧仓库覆盖
-        const finalCfg = current && !this.isNewerConfig(repoConfig, current)
-          ? this.mergeConfigs(current, repoConfig)
-          : repoConfig;
+        // 始终合并（取并集），并采用较新的 lastUpdated，防止旧端覆盖新端
+        const finalCfg = this.mergeConfigs(current, repoConfig);
         console.log('Using GitHub repo config:', finalCfg);
         this.applyConfig(finalCfg);
         localStorage.setItem('fl510_docs_config', JSON.stringify(finalCfg));
+        // 若与仓库不同步，且有Token，则推回仓库/Gist 以达成收敛
+        this.tryConvergeToServer(finalCfg);
         return true;
       }
       
@@ -483,6 +492,25 @@ class GitHubUsersManager {
     localStorage.setItem('fl510_docs_config', JSON.stringify(config));
     
     console.log('Config applied:', config);
+    // 应用后也写入 localStorage（触发其他标签 storage 事件）
+    try {
+      localStorage.setItem('fl510_docs_config', JSON.stringify(config));
+    } catch (_) {}
+  }
+
+  // 若可用，尝试向服务器汇聚最新配置（仓库/Gist）
+  async tryConvergeToServer(config) {
+    try {
+      const token = localStorage.getItem('github_sync_token');
+      if (!token) return;
+      // 读取当前仓库配置做对比，避免无谓写入
+      const repoCfg = await this.getConfigFromGitHub();
+      const needPush = !repoCfg || !this.isNewerConfig(repoCfg, config) || (JSON.stringify(repoCfg.allowedUsers||[]) !== JSON.stringify(config.allowedUsers||[]));
+      if (needPush) {
+        await this.saveConfigToGitHub(config);
+        await this.saveConfigToGist(config);
+      }
+    } catch (_) {}
   }
 
   // 添加用户到GitHub配置
