@@ -35,18 +35,32 @@ class AdminPanel {
 
   // 创建管理员按钮
   createAdminButton() {
-    const adminBtn = document.createElement('button');
-    adminBtn.id = 'admin-toggle-btn';
-    adminBtn.innerHTML = '⚙️ 管理';
-    adminBtn.className = 'admin-toggle-btn';
-    adminBtn.onclick = () => this.toggleAdminPanel();
+    // 检查是否已经存在管理员按钮
+    const existingBtn = document.getElementById('admin-toggle-btn');
+    if (existingBtn) {
+      return; // 按钮已存在，不需要重复创建
+    }
 
-    // 添加到用户信息区域
+    // 查找用户信息区域
     const userInfo = document.getElementById('user-info');
     if (userInfo) {
-      const container = userInfo.querySelector('.user-info-container');
-      if (container) {
-        container.appendChild(adminBtn);
+      const actionsContainer = userInfo.querySelector('.user-actions');
+      if (actionsContainer) {
+        // 如果存在actions容器，直接添加按钮
+        const adminBtn = document.createElement('button');
+        adminBtn.id = 'admin-toggle-btn';
+        adminBtn.innerHTML = '⚙️ 管理';
+        adminBtn.className = 'admin-toggle-btn';
+        adminBtn.title = '管理面板';
+        adminBtn.onclick = () => this.toggleAdminPanel();
+        
+        // 插入到退出按钮之前
+        const logoutBtn = actionsContainer.querySelector('.logout-btn');
+        if (logoutBtn) {
+          actionsContainer.insertBefore(adminBtn, logoutBtn);
+        } else {
+          actionsContainer.appendChild(adminBtn);
+        }
       }
     }
   }
@@ -791,4 +805,12 @@ document.addEventListener('DOMContentLoaded', () => {
       window.adminPanel = new AdminPanel(window.githubAuth);
     }
   }, 1000);
+});
+
+// 监听用户信息创建完成事件
+window.addEventListener('userInfoCreated', () => {
+  // 如果用户是管理员且管理面板已初始化，创建管理员按钮
+  if (window.githubAuth && window.githubAuth.isAdmin && window.adminPanel) {
+    window.adminPanel.createAdminButton();
+  }
 });

@@ -354,16 +354,23 @@ class GitHubAuth {
           <span class="user-name">${this.user.name || this.user.login}</span>
           ${this.isAdmin ? '<span class="admin-badge">管理员</span>' : ''}
         </div>
-        <button id="logout-btn" class="logout-btn" title="退出登录">退出</button>
+        <div class="user-actions">
+          ${this.isAdmin ? '<button id="admin-toggle-btn" class="admin-toggle-btn" title="管理面板">⚙️ 管理</button>' : ''}
+          <button id="logout-btn" class="logout-btn" title="退出登录">退出</button>
+        </div>
       </div>
     `;
 
     // 尝试多个可能的选择器来找到合适的位置插入用户信息
     let targetElement = null;
     
-    // 尝试不同的选择器
+    // 尝试不同的选择器，优先选择更合适的位置
     const selectors = [
-      '.container',
+      '.md-header',
+      '.md-header__inner',
+      '.md-header__title',
+      '.md-nav',
+      '.md-nav__title',
       '.md-container',
       '.md-main__inner',
       'main',
@@ -379,15 +386,19 @@ class GitHubAuth {
     }
     
     if (targetElement) {
-      // 如果是body，添加到顶部
-      if (targetElement.tagName === 'BODY') {
+      // 如果是header相关元素，插入到合适位置
+      if (targetElement.classList.contains('md-header') || targetElement.classList.contains('md-header__inner')) {
+        // 插入到header内部
+        targetElement.appendChild(userInfo);
+      } else if (targetElement.classList.contains('md-nav')) {
+        // 插入到导航栏
         targetElement.insertBefore(userInfo, targetElement.firstChild);
       } else {
-        // 其他情况，尝试插入到第一个子元素之前
+        // 其他情况，插入到第一个子元素之前
         targetElement.insertBefore(userInfo, targetElement.firstChild);
       }
     } else {
-      // 如果找不到合适的容器，直接添加到body
+      // 如果找不到合适的容器，直接添加到body顶部
       document.body.insertBefore(userInfo, document.body.firstChild);
     }
 
@@ -398,6 +409,19 @@ class GitHubAuth {
         this.logout();
       });
     }
+
+    // 绑定管理员按钮事件
+    const adminBtn = document.getElementById('admin-toggle-btn');
+    if (adminBtn && window.adminPanel) {
+      adminBtn.addEventListener('click', () => {
+        window.adminPanel.toggleAdminPanel();
+      });
+    }
+
+    // 触发用户信息创建完成事件
+    window.dispatchEvent(new CustomEvent('userInfoCreated', {
+      detail: { user: this.user, isAdmin: this.isAdmin }
+    }));
   }
 
   // 退出登录
@@ -565,60 +589,108 @@ class GitHubAuth {
 
       /* 用户信息样式 */
       #user-info {
-        background: #f8f9fa;
-        border-bottom: 1px solid #e1e4e8;
-        padding: 12px 24px;
-        margin-bottom: 16px;
-        border-radius: 8px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid #e1e4e8;
+        border-radius: 0 0 0 12px;
+        padding: 8px 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      #user-info:hover {
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
 
       .user-info-container {
         display: flex;
         align-items: center;
         gap: 12px;
-        max-width: 1180px;
-        margin: 0 auto;
       }
 
       .user-avatar img {
         border-radius: 50%;
         border: 2px solid #e1e4e8;
+        transition: border-color 0.2s;
+      }
+
+      .user-avatar img:hover {
+        border-color: #0366d6;
       }
 
       .user-details {
-        flex: 1;
         display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
       }
 
       .user-name {
         font-weight: 600;
         color: #24292e;
+        font-size: 14px;
+        line-height: 1.2;
       }
 
       .admin-badge {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745, #20c997);
         color: white;
-        font-size: 12px;
-        padding: 2px 8px;
-        border-radius: 12px;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
         font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .user-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .admin-toggle-btn {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .admin-toggle-btn:hover {
+        background: linear-gradient(135deg, #5a32a3, #d63384);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       .logout-btn {
-        background: #dc3545;
+        background: linear-gradient(135deg, #dc3545, #fd7e14);
         color: white;
         border: none;
-        padding: 6px 12px;
+        padding: 6px 10px;
         border-radius: 6px;
         cursor: pointer;
-        font-size: 14px;
-        transition: background 0.2s;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s;
       }
 
       .logout-btn:hover {
-        background: #c82333;
+        background: linear-gradient(135deg, #c82333, #e55a00);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       /* 手动认证表单样式 */
@@ -714,15 +786,37 @@ class GitHubAuth {
 
       /* 响应式设计 */
       @media (max-width: 768px) {
+        #user-info {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          border-radius: 0;
+          padding: 8px 12px;
+        }
+
         .user-info-container {
-          flex-direction: column;
-          align-items: flex-start;
+          flex-direction: row;
+          align-items: center;
           gap: 8px;
+          justify-content: space-between;
         }
         
         .user-details {
           flex-direction: column;
           align-items: flex-start;
+          flex: 1;
+        }
+
+        .user-actions {
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .admin-toggle-btn,
+        .logout-btn {
+          font-size: 10px;
+          padding: 4px 8px;
         }
 
         .input-group {
@@ -732,6 +826,27 @@ class GitHubAuth {
         .input-group input,
         .verify-btn {
           width: 100%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #user-info {
+          padding: 6px 8px;
+        }
+
+        .user-name {
+          font-size: 12px;
+        }
+
+        .admin-badge {
+          font-size: 8px;
+          padding: 1px 4px;
+        }
+
+        .admin-toggle-btn,
+        .logout-btn {
+          font-size: 9px;
+          padding: 3px 6px;
         }
       }
     `;
