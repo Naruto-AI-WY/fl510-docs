@@ -143,6 +143,7 @@ class AdminPanel {
     document.body.appendChild(modal);
     this.addAdminStyles();
     this.setupAdminEvents();
+    this.setupCrossTabListeners();
   }
 
   // 创建用户管理标签页
@@ -373,6 +374,39 @@ class AdminPanel {
       list.innerHTML = newContent;
     } else {
       console.error('Authorized users list element not found');
+    }
+    // 同步更新标题数量
+    const header = document.querySelector('.authorized-users h5');
+    if (header && window.AUTH_CONFIG && Array.isArray(window.AUTH_CONFIG.allowedUsers)) {
+      header.textContent = `授权用户列表 (${window.AUTH_CONFIG.allowedUsers.length} 个用户)`;
+    }
+  }
+
+  // 跨标签页监听：收到更新时刷新面板
+  setupCrossTabListeners() {
+    // storage 事件（其他标签页写入 localStorage 时触发）
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'fl510_docs_config' && e.newValue) {
+        try {
+          const cfg = JSON.parse(e.newValue);
+          if (cfg && cfg.allowedUsers) {
+            if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = cfg.allowedUsers;
+            this.refreshUsersList();
+          }
+        } catch (_) {}
+      }
+    });
+
+    // BroadcastChannel（实时消息）
+    if (window.githubUsersManager && window.githubUsersManager.broadcastChannel) {
+      try {
+        window.githubUsersManager.broadcastChannel.addEventListener('message', (event) => {
+          if (event && event.data && event.data.type === 'user-update' && event.data.config) {
+            if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = event.data.config.allowedUsers || [];
+            this.refreshUsersList();
+          }
+        });
+      } catch (_) {}
     }
   }
 
