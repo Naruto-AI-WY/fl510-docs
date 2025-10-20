@@ -857,18 +857,19 @@ AdminPanel.prototype.createSyncTab = function() {
           </ol>
           <div class="token-input">
             <input type="password" id="github-token-input" placeholder="输入GitHub Personal Access Token">
-            <button onclick="try { if(window.configSync && window.configSync.setupSync) { window.configSync.setupSync(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }">启用同步</button>
+            <button onclick="try { console.log('Checking configSync:', window.configSync); if(window.configSync && window.configSync.setupSync && typeof window.configSync.setupSync === 'function') { console.log('Calling setupSync'); window.configSync.setupSync(); } else { console.error('ConfigSync not available:', { configSync: !!window.configSync, setupSync: !!window.configSync?.setupSync, type: typeof window.configSync?.setupSync }); alert('配置同步功能未加载，请刷新页面重试'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错：' + e.message); }">启用同步</button>
           </div>
         </div>
       ` : `
-        <div class="sync-actions">
-          <h5>同步操作</h5>
-          <div class="sync-buttons">
-            <button onclick="try { if(window.configSync && window.configSync.syncConfig) { window.configSync.syncConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">🔄 立即同步</button>
-            <button onclick="try { if(window.configSync && window.configSync.loadConfig) { window.configSync.loadConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">📥 从云端加载</button>
-            <button onclick="try { if(window.configSync && window.configSync.disableSync) { window.configSync.disableSync(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn danger">❌ 禁用同步</button>
-          </div>
-        </div>
+            <div class="sync-actions">
+              <h5>同步操作</h5>
+              <div class="sync-buttons">
+                <button onclick="try { if(window.configSync && window.configSync.syncConfig) { window.configSync.syncConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">🔄 立即同步</button>
+                <button onclick="try { if(window.configSync && window.configSync.loadConfig) { window.configSync.loadConfig(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn">📥 从云端加载</button>
+                <button onclick="try { if(window.configSync && window.configSync.disableSync) { window.configSync.disableSync(); } else { alert('配置同步功能未加载'); } } catch(e) { console.error('ConfigSync error:', e); alert('配置同步功能出错，请刷新页面重试'); }" class="sync-btn danger">❌ 禁用同步</button>
+                <button onclick="try { console.log('Manual init attempt'); if(typeof initializeConfigSync === 'function') { initializeConfigSync(); alert('已尝试重新初始化配置同步功能'); } else { alert('初始化函数不可用'); } } catch(e) { console.error('Manual init error:', e); alert('手动初始化失败：' + e.message); }" class="sync-btn" style="background: #6c757d;">🔧 重新初始化</button>
+              </div>
+            </div>
       `}
       
       <div class="sync-info">

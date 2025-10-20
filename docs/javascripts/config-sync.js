@@ -512,8 +512,25 @@ function initializeConfigSync() {
   try {
     const realConfigSync = new ConfigSync();
     
-    // 替换占位符对象
-    Object.assign(window.configSync, realConfigSync);
+    // 替换占位符对象，保留原有属性
+    const originalMethods = {
+      setupSync: window.configSync.setupSync,
+      syncConfig: window.configSync.syncConfig,
+      loadConfig: window.configSync.loadConfig,
+      disableSync: window.configSync.disableSync
+    };
+    
+    // 复制真实对象的所有属性和方法
+    Object.keys(realConfigSync).forEach(key => {
+      window.configSync[key] = realConfigSync[key];
+    });
+    
+    // 确保方法正确绑定
+    window.configSync.setupSync = realConfigSync.setupSync.bind(realConfigSync);
+    window.configSync.syncConfig = realConfigSync.syncConfig.bind(realConfigSync);
+    window.configSync.loadConfig = realConfigSync.loadConfig.bind(realConfigSync);
+    window.configSync.disableSync = realConfigSync.disableSync.bind(realConfigSync);
+    
     window.configSync.initialized = true;
     
     console.log('ConfigSync initialized successfully');
@@ -521,16 +538,23 @@ function initializeConfigSync() {
     console.error('Failed to initialize ConfigSync:', error);
     // 保持占位符对象，但标记为失败
     window.configSync.initialized = false;
-    window.configSync.setupSync = () => alert('配置同步功能初始化失败');
-    window.configSync.syncConfig = () => alert('配置同步功能初始化失败');
+    window.configSync.setupSync = () => alert('配置同步功能初始化失败，请刷新页面重试');
+    window.configSync.syncConfig = () => alert('配置同步功能初始化失败，请刷新页面重试');
     window.configSync.loadConfig = () => Promise.resolve(null);
-    window.configSync.disableSync = () => alert('配置同步功能初始化失败');
+    window.configSync.disableSync = () => alert('配置同步功能初始化失败，请刷新页面重试');
   }
 }
 
-// 在DOM加载完成后初始化
+// 立即尝试初始化
+initializeConfigSync();
+
+// 在DOM加载完成后再次尝试初始化
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeConfigSync);
-} else {
-  initializeConfigSync();
 }
+
+// 添加延迟初始化，确保所有依赖都已加载
+setTimeout(initializeConfigSync, 1000);
+
+// 将初始化函数暴露到全局作用域，以便手动调用
+window.initializeConfigSync = initializeConfigSync;
