@@ -653,9 +653,14 @@ class GitHubUsersManager {
         localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
         
         // 保存到GitHub仓库（主要存储）
+        console.log('Attempting to save config to GitHub repository...');
         const repoSuccess = await this.saveConfigToGitHub(currentConfig);
         if (repoSuccess) {
-          console.log('Config saved to GitHub repository');
+          console.log('✅ Config saved to GitHub repository');
+        } else {
+          console.error('❌ Failed to save config to GitHub repository');
+          // 显示Token错误通知
+          this.showTokenErrorNotification('添加用户失败', '无法将用户添加保存到GitHub仓库，请检查Token设置');
         }
         
         // 保存到GitHub Gist（备用存储）
@@ -711,6 +716,8 @@ class GitHubUsersManager {
             console.log('✅ Config updated in GitHub repository');
           } else {
             console.error('❌ Failed to save config to GitHub repository');
+            // 显示Token错误通知
+            this.showTokenErrorNotification('删除用户失败', '无法将用户删除保存到GitHub仓库，请检查Token设置');
           }
           
           // 保存到GitHub Gist（备用存储）
@@ -878,12 +885,20 @@ class GitHubUsersManager {
 
   // 同步用户
   async syncUsers() {
-    const success = await this.syncUsersFromGitHub();
-    if (success) {
-      alert('用户同步成功');
-      this.updateUsersList();
-    } else {
-      alert('用户同步失败，请检查网络连接');
+    try {
+      console.log('🔄 Starting user sync...');
+      const success = await this.syncUsersFromGitHub();
+      if (success) {
+        console.log('✅ User sync completed successfully');
+        alert('用户同步成功');
+        this.updateUsersList();
+      } else {
+        console.error('❌ User sync failed');
+        this.showTokenErrorNotification('同步失败', '无法从GitHub同步用户列表，请检查Token设置或网络连接');
+      }
+    } catch (error) {
+      console.error('❌ Exception during user sync:', error);
+      this.showTokenErrorNotification('同步失败', '同步用户时发生错误，请检查Token设置');
     }
   }
 
@@ -921,6 +936,162 @@ class GitHubUsersManager {
     } catch (error) {
       console.warn('Failed to dispatch userListUpdated event:', error);
     }
+  }
+
+  // 显示Token错误通知
+  showTokenErrorNotification(title, message) {
+    // 创建通知弹窗
+    const notification = document.createElement('div');
+    notification.className = 'token-error-notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <div class="notification-header">
+          <span class="notification-icon">⚠️</span>
+          <h4>${title}</h4>
+          <button class="close-btn" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>
+        </div>
+        <div class="notification-body">
+          <p>${message}</p>
+          <div class="notification-actions">
+            <button class="btn-primary" onclick="window.open('#admin-panel', '_self')">
+              🔑 设置Token
+            </button>
+            <button class="btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">
+              稍后处理
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // 添加样式
+    const style = document.createElement('style');
+    style.textContent = `
+      .token-error-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #fff;
+        border: 1px solid #e74c3c;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10000;
+        max-width: 400px;
+        animation: slideInRight 0.3s ease-out;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .notification-content {
+        padding: 0;
+      }
+
+      .notification-header {
+        background: #e74c3c;
+        color: white;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .notification-header h4 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .notification-icon {
+        font-size: 18px;
+        margin-right: 8px;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+      }
+
+      .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .notification-body {
+        padding: 16px;
+      }
+
+      .notification-body p {
+        margin: 0 0 16px 0;
+        color: #333;
+        line-height: 1.4;
+      }
+
+      .notification-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .btn-primary, .btn-secondary {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #c0392b;
+      }
+
+      .btn-secondary {
+        background: #f8f9fa;
+        color: #666;
+        border: 1px solid #dee2e6;
+      }
+
+      .btn-secondary:hover {
+        background: #e9ecef;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // 添加到页面
+    document.body.appendChild(notification);
+
+    // 5秒后自动消失
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.remove();
+      }
+    }, 5000);
   }
 
   // 移除用户
