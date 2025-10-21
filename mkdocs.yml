@@ -101,6 +101,6 @@ nav:
           - pH 电极驱动: services/calibration/ph-electrode.md
           - 多路旋切阀驱动: services/cleaning/rotary-valve.md
           - 夹爪驱动: services/cleaning/gripper.md
-          - 大肯机械臂驱动: services/arms/高精度回零方法：挡片中心定位法详解.md
+          - 大肯机械臂驱动: services/arms/darken-drive.md
           - 大体积加液驱动: services/dispense/large-dosing.md
           - 开关量驱动: services/screen/dio-test.md
