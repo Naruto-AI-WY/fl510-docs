@@ -867,13 +867,14 @@ class GitHubUsersManager {
     // 添加用户
     const success = await this.addUserToGitHub(username);
     if (success) {
-      alert(`用户 ${username} 已添加`);
+      alert(`✅ 用户 ${username} 已成功添加并已同步到GitHub`);
       if (usernameInput) {
         usernameInput.value = '';
       }
       this.updateUsersList();
     } else {
-      alert(`用户 ${username} 已存在或添加失败`);
+      // GitHub保存失败，不显示成功消息
+      console.log(`❌ 用户添加失败：GitHub保存失败`);
     }
   }
 
@@ -1093,10 +1094,11 @@ class GitHubUsersManager {
     if (confirm(`确定要移除用户 ${username} 吗？`)) {
       const success = await this.removeUserFromGitHub(username);
       if (success) {
-        alert(`用户 ${username} 已移除`);
+        alert(`✅ 用户 ${username} 已成功移除并已同步到GitHub`);
         this.updateUsersList();
       } else {
-        alert(`移除用户 ${username} 失败`);
+        // GitHub保存失败，不显示成功消息
+        console.log(`❌ 用户移除失败：GitHub保存失败`);
       }
     }
   }
