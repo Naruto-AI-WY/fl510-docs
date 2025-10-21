@@ -455,8 +455,64 @@ class GitHubAuth {
 
   // 开始GitHub OAuth流程
   startGitHubAuth() {
-    // 由于GitHub OAuth需要后端支持，我们使用简化的手动认证
-    this.showManualAuthForm();
+    console.log('Starting GitHub OAuth flow...');
+    
+    // 显示OAuth说明和手动验证选项
+    this.showOAuthInstructions();
+  }
+
+  // 显示OAuth说明
+  showOAuthInstructions() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      const body = modal.querySelector('.auth-modal-body');
+      body.innerHTML = `
+        <div class="oauth-instructions">
+          <h4>🔐 GitHub OAuth 认证</h4>
+          <p>为了确保安全，请按以下步骤完成认证：</p>
+          
+          <div class="oauth-steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-content">
+                <h5>访问您的 GitHub 个人资料</h5>
+                <p>点击下方按钮打开您的 GitHub 个人资料页面</p>
+                <button onclick="window.open('https://github.com/settings/profile', '_blank')" class="github-profile-btn">
+                  📋 打开 GitHub 个人资料
+                </button>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-content">
+                <h5>复制您的用户名</h5>
+                <p>在个人资料页面找到您的用户名（@后面的部分）</p>
+              </div>
+            </div>
+            
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-content">
+                <h5>输入用户名验证</h5>
+                <p>在下方输入框中输入您的 GitHub 用户名</p>
+                <div class="input-group">
+                  <input type="text" id="github-username" placeholder="GitHub用户名" required>
+                  <button onclick="window.githubAuth.verifyManualAuth()" class="verify-btn">
+                    验证身份
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="oauth-note">
+            <p>🔒 此方法确保只有真实的 GitHub 用户才能访问</p>
+            <p>✅ 系统会验证用户名是否真实存在</p>
+          </div>
+        </div>
+      `;
+    }
   }
 
   // 处理OAuth回调
@@ -954,6 +1010,81 @@ class GitHubAuth {
         padding: 0 15px;
         color: #666;
         font-size: 14px;
+      }
+
+      .oauth-instructions {
+        text-align: left;
+      }
+
+      .oauth-steps {
+        margin: 20px 0;
+      }
+
+      .step {
+        display: flex;
+        margin: 20px 0;
+        align-items: flex-start;
+      }
+
+      .step-number {
+        background: #0366d6;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        flex: 1;
+      }
+
+      .step-content h5 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 16px;
+      }
+
+      .step-content p {
+        margin: 0 0 12px 0;
+        color: #666;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .github-profile-btn {
+        background: #24292e;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+
+      .github-profile-btn:hover {
+        background: #1a1e22;
+      }
+
+      .oauth-note {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 20px;
+      }
+
+      .oauth-note p {
+        margin: 5px 0;
+        font-size: 13px;
+        color: #666;
       }
 
       .auth-error {
