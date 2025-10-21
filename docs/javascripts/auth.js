@@ -512,16 +512,37 @@ class GitHubAuth {
       const body = modal.querySelector('.auth-modal-body');
       body.innerHTML = `
         <div class="manual-auth-form">
-          <h4>手动认证</h4>
-          <p>由于GitHub OAuth限制，请手动输入您的GitHub用户名：</p>
-          <div class="input-group">
-            <input type="text" id="github-username" placeholder="GitHub用户名" required>
-            <button onclick="window.githubAuth.verifyManualAuth()" class="verify-btn">
-              验证
-            </button>
+          <h4>🔐 安全认证</h4>
+          <p>为了确保系统安全，请提供您的GitHub信息进行验证：</p>
+          
+          <div class="auth-methods">
+            <div class="method-option">
+              <h5>方法1：GitHub OAuth（推荐）</h5>
+              <p>使用GitHub官方认证，最安全的方式</p>
+              <button onclick="window.githubAuth.startGitHubAuth()" class="github-auth-btn">
+                🔑 使用GitHub登录
+              </button>
+            </div>
+            
+            <div class="method-divider">
+              <span>或</span>
+            </div>
+            
+            <div class="method-option">
+              <h5>方法2：用户名验证</h5>
+              <p>输入您的GitHub用户名进行验证</p>
+              <div class="input-group">
+                <input type="text" id="github-username" placeholder="GitHub用户名" required>
+                <button onclick="window.githubAuth.verifyManualAuth()" class="verify-btn">
+                  验证
+                </button>
+              </div>
+            </div>
           </div>
+          
           <div class="auth-note">
-            <p>💡 提示：您可以在 <a href="https://github.com/settings/profile" target="_blank">GitHub个人资料</a> 中找到您的用户名</p>
+            <p>💡 提示：推荐使用GitHub OAuth认证，更安全可靠</p>
+            <p>🔒 所有认证信息都会进行安全验证</p>
           </div>
         </div>
       `;
@@ -868,6 +889,71 @@ class GitHubAuth {
         font-size: 12px;
         color: #666;
         margin: 0;
+      }
+
+      .auth-methods {
+        margin: 20px 0;
+      }
+
+      .method-option {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 15px 0;
+        text-align: left;
+      }
+
+      .method-option h5 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 16px;
+      }
+
+      .method-option p {
+        margin: 0 0 15px 0;
+        color: #666;
+        font-size: 14px;
+      }
+
+      .github-auth-btn {
+        background: #24292e;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+        width: 100%;
+      }
+
+      .github-auth-btn:hover {
+        background: #1a1e22;
+      }
+
+      .method-divider {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .method-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e9ecef;
+      }
+
+      .method-divider span {
+        background: white;
+        padding: 0 15px;
+        color: #666;
+        font-size: 14px;
       }
 
       .auth-error {
