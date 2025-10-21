@@ -659,8 +659,8 @@ class GitHubUsersManager {
           currentConfig.allowedUsers.push(username);
           currentConfig.lastUpdated = tempConfig.lastUpdated;
           
-          // 更新本地配置
-          this.applyConfig(currentConfig);
+          // 更新本地配置（使用替换模式，确保添加生效）
+          this.applyConfigReplace(currentConfig);
           
           // 保存到本地存储
           localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
@@ -713,8 +713,8 @@ class GitHubUsersManager {
             currentConfig.allowedUsers.splice(index, 1);
             currentConfig.lastUpdated = tempConfig.lastUpdated;
             
-            // 更新本地配置
-            this.applyConfig(currentConfig);
+            // 更新本地配置（使用替换模式，确保删除生效）
+            this.applyConfigReplace(currentConfig);
             
             // 保存到本地存储
             localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
