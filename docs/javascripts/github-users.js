@@ -439,9 +439,12 @@ class GitHubUsersManager {
     try {
       const githubToken = localStorage.getItem('github_sync_token');
       if (!githubToken) {
-        console.log('No GitHub token, cannot save to repository');
+        console.error('❌ No GitHub token found, cannot save to repository');
+        console.log('💡 Please set a GitHub token using the "🔑 设置Token" button');
         return false;
       }
+      
+      console.log('🔑 GitHub token found, proceeding with save...');
 
       const content = btoa(JSON.stringify(config, null, 2)); // 编码为base64
       const sha = await this.getFileSha(this.configFile);
@@ -489,11 +492,11 @@ class GitHubUsersManager {
           }
         }
         const errorText = await response.text();
-        console.error('Failed to save config to GitHub repository:', response.status, response.statusText, errorText);
+        console.error('❌ Failed to save config to GitHub repository:', response.status, response.statusText, errorText);
         return false;
       }
     } catch (error) {
-      console.error('Failed to save config to GitHub repository:', error);
+      console.error('❌ Exception while saving config to GitHub repository:', error);
       return false;
     }
   }
@@ -702,9 +705,12 @@ class GitHubUsersManager {
           localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
           
           // 保存到GitHub仓库（主要存储）
+          console.log('Attempting to save config to GitHub repository...');
           const repoSuccess = await this.saveConfigToGitHub(currentConfig);
           if (repoSuccess) {
-            console.log('Config updated in GitHub repository');
+            console.log('✅ Config updated in GitHub repository');
+          } else {
+            console.error('❌ Failed to save config to GitHub repository');
           }
           
           // 保存到GitHub Gist（备用存储）
