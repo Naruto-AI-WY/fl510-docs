@@ -254,7 +254,10 @@ class AdminPanel {
   // 获取授权用户列表
   getAuthorizedUsersList() {
     const current = this.auth && this.auth.user ? this.auth.user.login : null;
-    const users = (window.AUTH_CONFIG.allowedUsers || []).filter(u => u !== current);
+    // 去重处理，防止重复用户
+    const allUsers = window.AUTH_CONFIG.allowedUsers || [];
+    const uniqueUsers = [...new Set(allUsers)]; // 去重
+    const users = uniqueUsers.filter(u => u !== current);
     console.log('Getting authorized users list:', users);
     
     if (users.length === 0) {

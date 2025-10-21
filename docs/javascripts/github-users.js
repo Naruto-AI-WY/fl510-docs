@@ -600,8 +600,10 @@ class GitHubUsersManager {
   // 直接替换当前配置（用于已确认来源更新更新的情况，比如从仓库拉取或主动端广播）
   applyConfigReplace(config, options = {}) {
     if (config.allowedUsers) {
-      if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = config.allowedUsers;
-      if (window.githubAuth && window.githubAuth.config) window.githubAuth.config.allowedUsers = config.allowedUsers;
+      // 去重处理，防止重复用户
+      const uniqueUsers = [...new Set(config.allowedUsers)];
+      if (window.AUTH_CONFIG) window.AUTH_CONFIG.allowedUsers = uniqueUsers;
+      if (window.githubAuth && window.githubAuth.config) window.githubAuth.config.allowedUsers = uniqueUsers;
     }
     if (config.adminUsers) {
       if (window.AUTH_CONFIG) window.AUTH_CONFIG.adminUsers = config.adminUsers;
