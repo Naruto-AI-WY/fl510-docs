@@ -290,16 +290,17 @@ class AdminPanel {
 
       // 优先通过 githubUsersManager 统一持久化与广播
       if (window.githubUsersManager && window.githubUsersManager.addUserToGitHub) {
-        const ok = await window.githubUsersManager.addUserToGitHub(username);
-        if (ok) {
+        const success = await window.githubUsersManager.addUserToGitHub(username);
+        if (success) {
           // 本地UI刷新
           this.refreshUsersList();
           this.refreshSyncTabUsersList();
           const input = document.getElementById('new-username');
           if (input) input.value = '';
-          alert(`用户 ${username} 已成功添加并已同步`);
+          alert(`✅ 用户 ${username} 已成功添加并已同步到GitHub`);
         } else {
-          alert(`添加用户 ${username} 失败，请检查Token和网络`);
+          // GitHub保存失败，不显示成功消息
+          console.log(`❌ 用户添加失败：GitHub保存失败`);
         }
       } else {
         // 兜底：仅本地更新
@@ -339,17 +340,18 @@ class AdminPanel {
 
     // 优先通过 githubUsersManager 移除并同步
     if (window.githubUsersManager && window.githubUsersManager.removeUserFromGitHub) {
-      window.githubUsersManager.removeUserFromGitHub(username).then(ok => {
-        if (ok) {
+      window.githubUsersManager.removeUserFromGitHub(username).then(success => {
+        if (success) {
           this.refreshUsersList();
           this.refreshSyncTabUsersList();
-          alert('用户已移除并已同步');
+          alert('✅ 用户已移除并已同步到GitHub');
         } else {
-          alert('移除失败，请检查Token和网络');
+          // GitHub保存失败，不显示成功消息
+          console.log('❌ 用户移除失败：GitHub保存失败');
         }
       }).catch(err => {
         console.error('Remove user error:', err);
-        alert('移除失败，请稍后重试');
+        alert('❌ 移除失败，请稍后重试');
       });
     } else {
       // 兜底：仅本地更新
