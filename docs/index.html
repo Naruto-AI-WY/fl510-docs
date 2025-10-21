@@ -246,8 +246,13 @@ function buildItemCard(layerId, title, meta=null, list=null, link=null){
   // 如果有链接，添加点击事件
   if(link){
     card.style.cursor = 'pointer';
-    card.addEventListener('click', () => {
-      window.open(link, '_blank');
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('点击链接:', link);
+      // 确保链接是相对路径
+      const fullLink = link.startsWith('http') ? link : './' + link;
+      window.open(fullLink, '_blank');
     });
   }
   
