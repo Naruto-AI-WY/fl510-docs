@@ -643,44 +643,41 @@ class GitHubUsersManager {
       }
       
       if (!currentConfig.allowedUsers.includes(username)) {
-        currentConfig.allowedUsers.push(username);
-        currentConfig.lastUpdated = new Date().toISOString();
+        // 创建临时配置用于测试保存
+        const tempConfig = { ...currentConfig };
+        tempConfig.allowedUsers.push(username);
+        tempConfig.lastUpdated = new Date().toISOString();
         
-        // 更新本地配置
-        this.applyConfig(currentConfig);
-        
-        // 保存到本地存储
-        localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
-        
-        // 保存到GitHub仓库（主要存储）
+        // 先尝试保存到GitHub仓库（主要存储）
         console.log('Attempting to save config to GitHub repository...');
-        const repoSuccess = await this.saveConfigToGitHub(currentConfig);
+        const repoSuccess = await this.saveConfigToGitHub(tempConfig);
+        
         if (repoSuccess) {
           console.log('✅ Config saved to GitHub repository');
+          
+          // 只有GitHub保存成功后才更新本地配置
+          currentConfig.allowedUsers.push(username);
+          currentConfig.lastUpdated = tempConfig.lastUpdated;
+          
+          // 更新本地配置
+          this.applyConfig(currentConfig);
+          
+          // 保存到本地存储
+          localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
+          
+          // 保存到GitHub Gist（备用存储）
+          await this.saveConfigToGist(currentConfig);
+          
+          console.log(`User ${username} added to config:`, currentConfig);
+          // 通知用户管理面板刷新
+          this.notifyUserListUpdate();
+          return true;
         } else {
           console.error('❌ Failed to save config to GitHub repository');
           // 显示Token错误通知
           this.showTokenErrorNotification('添加用户失败', '无法将用户添加保存到GitHub仓库，请检查Token设置');
+          return false;
         }
-        
-        // 保存到GitHub Gist（备用存储）
-        await this.saveConfigToGist(currentConfig);
-        
-        // 通过BroadcastChannel通知其他标签页
-        if (this.broadcastChannel) {
-          console.log('Sending broadcast message to other tabs...');
-          this.broadcastChannel.postMessage({
-            type: 'user-update',
-            config: currentConfig
-          });
-        } else {
-          console.log('BroadcastChannel not available');
-        }
-        
-        console.log(`User ${username} added to config:`, currentConfig);
-        // 通知用户管理面板刷新
-        this.notifyUserListUpdate();
-        return true;
       } else {
         console.log(`User ${username} already exists in config`);
         return false;
@@ -700,44 +697,41 @@ class GitHubUsersManager {
       if (currentConfig.allowedUsers) {
         const index = currentConfig.allowedUsers.indexOf(username);
         if (index > -1) {
-          currentConfig.allowedUsers.splice(index, 1);
-          currentConfig.lastUpdated = new Date().toISOString();
+          // 创建临时配置用于测试保存
+          const tempConfig = { ...currentConfig };
+          tempConfig.allowedUsers.splice(index, 1);
+          tempConfig.lastUpdated = new Date().toISOString();
           
-          // 更新本地配置
-          this.applyConfig(currentConfig);
-          
-          // 保存到本地存储
-          localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
-          
-          // 保存到GitHub仓库（主要存储）
+          // 先尝试保存到GitHub仓库（主要存储）
           console.log('Attempting to save config to GitHub repository...');
-          const repoSuccess = await this.saveConfigToGitHub(currentConfig);
+          const repoSuccess = await this.saveConfigToGitHub(tempConfig);
+          
           if (repoSuccess) {
             console.log('✅ Config updated in GitHub repository');
+            
+            // 只有GitHub保存成功后才更新本地配置
+            currentConfig.allowedUsers.splice(index, 1);
+            currentConfig.lastUpdated = tempConfig.lastUpdated;
+            
+            // 更新本地配置
+            this.applyConfig(currentConfig);
+            
+            // 保存到本地存储
+            localStorage.setItem('fl510_docs_config', JSON.stringify(currentConfig));
+            
+            // 保存到GitHub Gist（备用存储）
+            await this.saveConfigToGist(currentConfig);
+            
+            console.log(`User ${username} removed from config:`, currentConfig);
+            // 通知用户管理面板刷新
+            this.notifyUserListUpdate();
+            return true;
           } else {
             console.error('❌ Failed to save config to GitHub repository');
             // 显示Token错误通知
             this.showTokenErrorNotification('删除用户失败', '无法将用户删除保存到GitHub仓库，请检查Token设置');
+            return false;
           }
-          
-          // 保存到GitHub Gist（备用存储）
-          await this.saveConfigToGist(currentConfig);
-          
-          // 通过BroadcastChannel通知其他标签页
-          if (this.broadcastChannel) {
-            console.log('Sending broadcast message to other tabs...');
-            this.broadcastChannel.postMessage({
-              type: 'user-update',
-              config: currentConfig
-            });
-          } else {
-            console.log('BroadcastChannel not available');
-          }
-          
-          console.log(`User ${username} removed from config:`, currentConfig);
-          // 通知用户管理面板刷新
-          this.notifyUserListUpdate();
-          return true;
         }
       }
       
