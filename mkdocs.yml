@@ -87,3 +87,20 @@ nav:
           - 小体积标定: services/calibration/small.md
           - 大体积标定: services/calibration/large.md
           - pH 电极校准: services/calibration/ph_calibration_requirements_v1.6.7.md
+      - 功能驱动层:
+          - 酸碱加液（2 路 10 通道）: services/programs/acid-alkali-2ch-program.md
+          - 小体积加液（8 路）: services/programs/small-dosing-8ch-program.md
+          - 大体积加液（4 路）: services/programs/large-dosing-program.md
+          - 清洗臂: services/arms/cleaning-arm.md
+          - 大肯机械臂（左/右）: services/arms/daken-left.md
+          - 试剂检测: services/calibration/large.md
+          - 管路检测（液位）: services/calibration/small.md
+      - 底层驱动层:
+          - 注射泵驱动: services/dispense/small-dosing.md
+          - 加液臂驱动: services/dispense/large-dosing.md
+          - pH 电极驱动: services/calibration/ph-electrode.md
+          - 多路旋切阀驱动: services/cleaning/rotary-valve.md
+          - 夹爪驱动: services/cleaning/gripper.md
+          - 大肯机械臂驱动: services/arms/daken-right.md
+          - 大体积加液驱动: services/dispense/large-dosing.md
+          - 开关量驱动: services/screen/dio-test.md
