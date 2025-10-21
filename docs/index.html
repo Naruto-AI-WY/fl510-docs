@@ -155,25 +155,25 @@ const DATA = {
     },
     { id:"functional", name:"功能驱动层", subtitle:"把原子驱动组合为可复用功能块", tint:"tint-functional", kind:"groups",
       groups:[
-        { name:"酸碱加液（2 路 10 通道）", items:["注射泵驱动","加液臂驱动"] },
-        { name:"小体积加液（8 路）", items:["注射泵驱动","加液臂驱动"] },
-        { name:"大体积加液（4 路）", items:["大体积加液驱动","开关量驱动","管路检测（液位）"] },
-        { name:"清洗臂", items:["清洗臂驱动","开关量驱动"] },
-        { name:"大肯机械臂（左/右）", items:["大肯机械臂驱动","夹爪驱动","pH 电极驱动"] },
-        { name:"试剂检测", items:["RS485"] },
-        { name:"管路检测（液位）", items:["直驱"] }
+        { name:"酸碱加液（2 路 10 通道）", items:["注射泵驱动","加液臂驱动"], link:"services/programs/acid-alkali-2ch-program.md" },
+        { name:"小体积加液（8 路）", items:["注射泵驱动","加液臂驱动"], link:"services/programs/small-dosing-8ch-program.md" },
+        { name:"大体积加液（4 路）", items:["大体积加液驱动","开关量驱动","管路检测（液位）"], link:"services/programs/large-dosing-program.md" },
+        { name:"清洗臂", items:["清洗臂驱动","开关量驱动"], link:"services/cleaning/cleaning-arm.md" },
+        { name:"大肯机械臂（左/右）", items:["大肯机械臂驱动","夹爪驱动","pH 电极驱动"], link:"services/arms/daken-left.md" },
+        { name:"试剂检测", items:["RS485"], link:"services/calibration/large.md" },
+        { name:"管路检测（液位）", items:["直驱"], link:"services/calibration/small.md" }
       ]
     },
     { id:"drivers", name:"底层驱动层", subtitle:"设备与执行器的直接驱动", tint:"tint-drivers", kind:"items",
       items:[
-        { name:"注射泵驱动", meta:"RS485" },
-        { name:"加液臂驱动", meta:"Modbus Slave" },
-        { name:"pH 电极驱动", meta:"RS485" },
-        { name:"多路旋切阀驱动", meta:"RS485" },
-        { name:"夹爪驱动", meta:"Modbus Slave" },
-        { name:"大肯机械臂驱动", meta:"Modbus Slave" },
-        { name:"大体积加液驱动", meta:"直驱" },
-        { name:"开关量驱动", meta:"直驱（泵/阀/加热/超声/排风）" }
+        { name:"注射泵驱动", meta:"RS485", link:"services/dispense/small-dosing.md" },
+        { name:"加液臂驱动", meta:"Modbus Slave", link:"services/dispense/large-dosing.md" },
+        { name:"pH 电极驱动", meta:"RS485", link:"services/calibration/ph-electrode.md" },
+        { name:"多路旋切阀驱动", meta:"RS485", link:"services/cleaning/rotary-valve.md" },
+        { name:"夹爪驱动", meta:"Modbus Slave", link:"services/cleaning/gripper.md" },
+        { name:"大肯机械臂驱动", meta:"Modbus Slave", link:"services/arms/daken-right.md" },
+        { name:"大体积加液驱动", meta:"直驱", link:"services/dispense/large-dosing.md" },
+        { name:"开关量驱动", meta:"直驱（泵/阀/加热/超声/排风）", link:"services/screen/dio-test.md" }
       ]
     }
   ],
