@@ -240,8 +240,17 @@ function highlightText(text, q){
   return escapeHtml(text).replace(re, '<mark>$1</mark>');
 }
 
-function buildItemCard(layerId, title, meta=null, list=null){
+function buildItemCard(layerId, title, meta=null, list=null, link=null){
   const card = h('div', {class:'card', dataset:{layer:layerId, rawTitle:title, rawMeta:meta||'', rawList:JSON.stringify(list||[])}});
+  
+  // 如果有链接，添加点击事件
+  if(link){
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+      window.open(link, '_blank');
+    });
+  }
+  
   const h4 = h('h4', {}); h4.innerHTML = highlightText(title, currentQuery);
   card.appendChild(h4);
   if(meta){ const m = h('div', {class:'meta'}); m.innerHTML = highlightText(meta, currentQuery); card.appendChild(m); }
@@ -273,11 +282,11 @@ function buildLayer(layer, rank){
   const body = h('div', {class:'layer-body'});
   const cards = h('div', {class:'cards'});
   if(layer.kind === 'items'){
-    (layer.items||[]).forEach(it => cards.appendChild(buildItemCard(layer.id, it.name||it.meta, it.meta||null, it.items||null)));
+    (layer.items||[]).forEach(it => cards.appendChild(buildItemCard(layer.id, it.name||it.meta, it.meta||null, it.items||null, it.link||null)));
   }else if(layer.kind === 'groups'){
-    (layer.groups||[]).forEach(g => cards.appendChild(buildItemCard(layer.id, g.name, null, g.items||[])));
+    (layer.groups||[]).forEach(g => cards.appendChild(buildItemCard(layer.id, g.name, null, g.items||[], g.link||null)));
   }else if(layer.kind === 'buckets'){
-    (layer.buckets||[]).forEach(b => cards.appendChild(buildItemCard(layer.id, b.title, null, b.items||[])));
+    (layer.buckets||[]).forEach(b => cards.appendChild(buildItemCard(layer.id, b.title, null, b.items||[], b.link||null)));
   }
   body.appendChild(cards);
   requestAnimationFrame(()=>{ body.style.maxHeight = expandedAll ? (body.scrollHeight+'px') : '0px'; });
