@@ -23,6 +23,11 @@ theme:
         name: Switch to light mode
 plugins:
   - search
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
@@ -36,6 +41,8 @@ markdown_extensions:
 extra_javascript:
   - javascripts/mathjax.js?v=2024-10-20
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
+  - javascripts/mermaid-init.js?v=2024-10-20
   - javascripts/auth-config.js?v=2024-10-20
   - javascripts/auth.js?v=2024-10-20
   - javascripts/admin.js?v=2024-10-20
